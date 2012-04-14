@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -39,6 +39,8 @@ NAME_STORAGE 				= 'db';
 NAME_LOG					= 'log';
 NAME_DATA					= 'data';
 META_PROFILE 				= 'meta_profiles.json';
+META_RELEASE_PROFILE 		= 'meta_release_profiles.json';
+META_GROUP_PROFILE 			= 'meta_group_profiles.json';
 VERSION_PROFILE_LIST 		= '0.1.0';
 DESCRIPTION_PROFILE_LIST 	= 'ACTS meta profiles infomation using json syntax';
 VERSION_LOG 				= '0.1.0'
@@ -53,7 +55,9 @@ PATH = {
 	STORAGE:path.join(process.cwd(), NAME_STORAGE),
 	LOG:path.join(process.cwd(), NAME_STORAGE, NAME_LOG),
 	DATA:path.join(process.cwd(), NAME_STORAGE, NAME_DATA),
-	META_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_PROFILE)
+	META_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_PROFILE),
+	META_RELEASE_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_RELEASE_PROFILE),
+	META_GROUP_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_GROUP_PROFILE)
 };
 
 PROFILE_LIST = {
@@ -70,12 +74,17 @@ PROFILE_LIST = {
 				activity: true
 			},
 			config: {
-				event: 1000,
-				count: 5,
-				seed_interval: 10,
-				seed_start: 0,
-				seed_end: 40,
-				throttle: 0
+				seqNo: 0,
+				domain: "itempage3",
+				ersNo: 3000,
+				branch: "bc_3000_001",
+				tag: "REL_3000_001",
+				type: "DR",
+				requester: "김태희",
+				requestDate: "2012-04-05",
+				builder: "이민정",
+				status: "빌드완료",
+				buildDate: "2012-04-08"
 			},
 			target:{
 			},
@@ -100,12 +109,17 @@ PROFILE = {
 		activity: true
 	},
 	config: {
-		event: 1000,
-		count: 5,
-		seed_interval: 10,
-		seed_start: 0,
-		seed_end: 40,
-		throttle: 0
+		seqNo: 0,
+		domain: "itempage3",
+		ersNo: 3000,
+		branch: "bc_3000_001",
+		tag: "REL_3000_001",
+		type: "DR",
+		requester: "김태희",
+		requestDate: "2012-04-05",
+		builder: "이민정",
+		status: "빌드완료",
+		buildDate: "2012-04-08"
 	},
 	target: {
 	},
@@ -132,12 +146,16 @@ RELEASE_PROFILE_LIST = {
 				activity: true
 			},
 			config: {
-				event: 1000,
-				count: 5,
-				seed_interval: 10,
-				seed_start: 0,
-				seed_end: 40,
-				throttle: 0
+				seqNo: 0,
+				domain: "itempage3",
+				ersNo: 3000,
+				branch: "bc_3000_001",
+				tag: "REL_3000_001",
+				type: "DR",
+				requester: "이민정",
+				requestDate: "2012-04-05",
+				status: "배포완료",
+				desc: "옥션 아이템 페이지"
 			},
 			target:{
 			},
@@ -152,6 +170,30 @@ RELEASE_PROFILE_LIST = {
 	}
 };
 
+GROUP_PROFILE_LIST = {
+    version: VERSION_PROFILE_LIST,
+	description: 'ACTS meta profiles infomation using json syntax',
+	profiles: {
+		auction: {
+			name: 'auction',
+			desc: '',
+			activity: true,
+			server: [
+				"172.30.136.243"
+			]
+		}
+	}
+};
+
+GROUP_PROFILE = {
+	name: 'auction',
+	desc: '',
+	activity: true,
+	server: [
+		"172.30.136.243"
+	]
+}
+
 RELEASE_PROFILE = {
 	name: '',
 	activity: false,
@@ -162,12 +204,16 @@ RELEASE_PROFILE = {
 		activity: true
 	},
 	config: {
-		event: 1000,
-		count: 5,
-		seed_interval: 10,
-		seed_start: 0,
-		seed_end: 40,
-		throttle: 0
+		seqNo: 0,
+		domain: "itempage3",
+		ersNo: 3000,
+		branch: "bc_3000_001",
+		tag: "REL_3000_001",
+		type: "DR",
+		requester: "이민정",
+		requestDate: "",
+		status: "",
+		desc: ""
 	},
 	target: {
 	},
@@ -179,6 +225,72 @@ RELEASE_PROFILE = {
 		months:[]
 	}
 }
+
+DUMMY_SOURCE_LIST = {
+	source: [
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp"
+	],
+	binary: [
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp"
+	]
+};
+
+DUMMY_SERVER_LIST = {
+	builder: [
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243"
+	],
+	tester: [
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243"
+	],
+	staging: [
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243"
+	],
+	release: [
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243",
+		"172.30.136.243"
+	]
+};
 
 DEVICE_LIST = {
 	version: VERSION_PROFILE_LIST,

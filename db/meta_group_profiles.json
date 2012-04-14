@@ -1,0 +1,23 @@
+{
+	"version": "0.1.0",
+	"description": "ACTS meta profiles infomation using json syntax",
+	"profiles": {
+		"auction": {
+			"name": "auction",
+			"desc": "",
+			"activity": true,
+			"server": [
+				"172.30.136.243"
+			]
+		},
+		"rewtrt": {
+			"name": "rewtrt",
+			"desc": "rttrtrtr",
+			"activity": true,
+			"server": [
+				"172.30.136.243",
+				"172.30.136.243"
+			]
+		}
+	}
+}

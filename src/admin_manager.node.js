@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -37,6 +37,8 @@ var finder 			= require('./utils/finder.node');
 var storage 		= require('./data/storage.node');
 var events 			= require('events');
 var Profile 		= require('./stuff/profile.node');
+var Release			= require('./stuff/release.node');
+var Group			= require('./stuff/group.node');
 //var Device 			= require('./stuff/device.node');
 //var DeviceScheduler = require('./scheduler/device_scheduler.node');
 
@@ -48,10 +50,15 @@ function AdminManager() {
 	de.log(TAG,'NEW');
 	
 	this.main 						= new Array();
-	this.profiles 					= new Object;
-	this.activityProfiles 			= new Object;
+	this.profiles 					= new Object();
+	this.activityProfiles 			= new Object();
 	this.profilePool 				= new Object();
 	this.devicePool 				= new Object();
+	
+	this.releaseProfiles			= new Object();
+	this.releasePool				= new Object();
+	this.groupProfiles				= new Object();
+	this.groupPool					= new Object();
 	
 	this.main = this;
 	
@@ -61,6 +68,12 @@ function AdminManager() {
 	
 	this.setProfiles();
 	this.profilePool = this.setProfilePool();
+	
+	this.setReleaseProfiles();
+	this.releasePool = this.setReleaseProfilePool();
+	
+	this.setGroupProfiles();
+	this.groupPool = this.setGroupProfilePool();
 	//this.addSchedulers();
 };
 
@@ -78,6 +91,10 @@ module.exports = AdminManager;
 
 AdminManager.prototype.getProfiles = function() {	return this.profiles; }
 
+AdminManager.prototype.getReleaseProfiles = function() {	return this.releaseProfiles; }
+
+AdminManager.prototype.getGroupProfiles = function() {	return this.groupProfiles; }
+
 AdminManager.prototype.getProfile = function( profile ) {	return this.profilePool[ profile ]; }
 
 AdminManager.prototype.getActivityProfiles = function() { return this.activityProfiles; }
@@ -93,7 +110,18 @@ AdminManager.prototype.setProfiles = function() {
 	var data = storage.loadMetaProfilesSync();
 	this.profiles = data;
 	//this.activityProfiles = this.setActivityProfiles();
+}
+
+AdminManager.prototype.setReleaseProfiles = function() {
 	
+	var data = storage.loadMetaReleaseSync();
+	this.releaseProfiles = data;
+}
+
+AdminManager.prototype.setGroupProfiles = function() {
+	
+	var data = storage.loadMetaGroupsSync();
+	this.groupProfiles = data;
 }
 	
 AdminManager.prototype.setActivityProfiles = function() {
@@ -120,10 +148,46 @@ AdminManager.prototype.setProfilePool = function() {
 	return  pool;
 }
 
+AdminManager.prototype.setReleaseProfilePool = function() {
+	//var list = this.activityProfiles;
+	var list = this.releaseProfiles;
+	var pool = new Object();
+	for(name in list) {
+		var pf = new Release( this.main, list[name] );
+		pool[name] = pf; 
+	}
+	
+	return  pool;
+}
+
+AdminManager.prototype.setGroupProfilePool = function() {
+	//var list = this.activityProfiles;
+	var list = this.groupProfiles;
+	var pool = new Object();
+	for(name in list) {
+		var pf = new Group( this.main, list[name] );
+		pool[name] = pf; 
+	}
+	
+	return  pool;
+}
+
 AdminManager.prototype.addProfile = function(profile) {
 	this.profiles[profile.name] = profile;
 	var pf = new Profile( this.main, this.profiles[profile.name] );
 	this.profilePool[profile.name] = pf;
+};
+
+AdminManager.prototype.addReleaseProfile = function(profile) {
+	this.releaseProfiles[profile.name] = profile;
+	var pf = new Release( this.main, this.releaseProfiles[profile.name] );
+	this.releasePool[profile.name] = pf;
+};
+
+AdminManager.prototype.addGroupProfile = function(profile) {
+	this.groupProfiles[profile.name] = profile;
+	var pf = new Group( this.main, this.groupProfiles[profile.name] );
+	this.groupPool[profile.name] = pf;
 };
 
 AdminManager.prototype.loadAllDevice = function(devices) {
@@ -206,12 +270,18 @@ AdminManager.prototype.newProfile = function(config) {
 	profile.name = config.name;
 	
 	//	set config
-	profile.config.event = Number(config.event);
-	profile.config.count = Number(config.count);
-	profile.config.seed_start = Number(config.seed_start);
-	profile.config.seed_end = Number(config.seed_end);
-	profile.config.seed_interval = Number(config.seed_interval);
-	profile.config.throttle = Number(config.throttle);
+	console.log("@@@: " + profile.config.domain);
+	console.log("@@@: " + config.domain);
+	profile.config.domain = config.domain;
+	profile.config.ersNo = config.ersNo;
+	profile.config.branch = config.branch;
+	profile.config.tag = config.tag;
+	profile.config.type = "DR";
+	profile.config.requester = "kim tae hi";
+	profile.config.requestDate = new Date();
+	profile.config.builder = "lee min jung";
+	profile.config.buildDate = "-";
+	profile.config.status = "-";
 	
 	//	set schedule
 	profile.schedule.mins = config.mins.split(',');
@@ -229,6 +299,57 @@ AdminManager.prototype.newProfile = function(config) {
 	}
 }
 
+AdminManager.prototype.newReleaseProfile = function(config) {
+	de.debug('config', config);
+	var profile = RELEASE_PROFILE;
+	profile.name = config.name;
+	
+	//	set config
+	profile.config.domain = config.domain;
+	profile.config.ersNo = config.ersNo;
+	profile.config.branch = config.branch;
+	profile.config.tag = config.tag;
+	profile.config.type = "DR";
+	profile.config.requester = "kim tae hi";
+	profile.config.requestDate = new Date();
+	profile.config.status = "wait";
+	profile.config.desc = config.desc;
+	
+	//	set schedule
+	profile.schedule.mins = config.mins.split(',');
+	profile.schedule.hours = config.hours.split(',');
+	profile.schedule.days = config.days.split(',');
+	profile.schedule.weeks = config.weeks.split(',');
+	profile.schedule.months = config.months.split(',');
+	
+	this.addReleaseProfile(profile);
+
+	if( storage.saveMetaReleaseProfileSync(profile) ) {
+		this.emit( 'evt_added_release', this.releaseProfiles );
+	} else {
+		this.emit( 'evt_added_release', null );
+	}
+}
+
+AdminManager.prototype.newGroupProfile = function(config) {
+	de.debug('config', config);
+	var profile = GROUP_PROFILE;
+	profile.name = config.name;
+	
+	//	set config
+	profile.name = config.name;
+	profile.desc = config.desc;
+	profile.server = config.list;
+	
+	this.addGroupProfile(profile);
+
+	if( storage.saveMetaGroupProfileSync(profile) ) {
+		this.emit( 'evt_added_group', this.groupProfiles );
+	} else {
+		this.emit( 'evt_added_group', null );
+	}
+}
+
 AdminManager.prototype.deleteProfile = function(list) {
 	
 	for(var i = 0; i < list.length; i++) {
@@ -239,6 +360,20 @@ AdminManager.prototype.deleteProfile = function(list) {
 		this.emit( 'evt_deleted_profile', this.profiles );
 	} else {
 		this.emit( 'evt_deleted_profile', null );
+	}
+}
+
+AdminManager.prototype.deleteReleaseProfile = function(list) {
+	
+	console.log("len: " + list.length);
+	for(var i = 0; i < list.length; i++) {
+		delete this.releaseProfiles[ list[i] ];
+	}
+	
+	if( storage.saveMetaReleaseProfileSync(this.releaseProfiles) ) {
+		this.emit( 'evt_deleted_release_profile', this.releaseProfiles );
+	} else {
+		this.emit( 'evt_deleted_release_profile', null );
 	}
 }
 

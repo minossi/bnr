@@ -52,6 +52,8 @@ Storage.makeStorage = function() {
 		}
 		
 		fio.saveToJSONFileSync( PATH.META_PROFILE, PROFILE_LIST );
+		fio.saveToJSONFileSync( PATH.META_RELEASE_PROFILE, RELEASE_PROFILE_LIST );
+		fio.saveToJSONFileSync( PATH.META_GROUP_PROFILE, GROUP_PROFILE_LIST );
 	}
 };
 	
@@ -134,6 +136,26 @@ Storage.loadMetaProfilesSync = function() {
 	return result.profiles;
 };
 
+Storage.loadMetaReleaseSync = function() {
+	
+	var result = fio.loadFromJSONFileSync( PATH.META_RELEASE_PROFILE );
+	if(result == null) {
+		de.log(TAG, 'load failed: meta profile');
+	}
+	
+	return result.profiles;
+};
+
+Storage.loadMetaGroupsSync = function() {
+	
+	var result = fio.loadFromJSONFileSync( PATH.META_GROUP_PROFILE );
+	if(result == null) {
+		de.log(TAG, 'load failed: meta profile');
+	}
+	
+	return result.profiles;
+};
+
 Storage.saveMetaProfilesSync = function( profiles ) {
 	var data = new Object();
 	data.version = VERSION_PROFILE_LIST;
@@ -141,6 +163,32 @@ Storage.saveMetaProfilesSync = function( profiles ) {
 	data.profiles = profiles;
 	
 	if(fio.saveToJSONFileSync( PATH.META_PROFILE, data )) {
+		return true;
+	}
+	
+	return false;
+};
+
+Storage.saveMetaReleasesProfilesSync = function( profiles ) {
+	var data = new Object();
+	data.version = VERSION_PROFILE_LIST;
+	data.description = DESCRIPTION_PROFILE_LIST;
+	data.profiles = profiles;
+	
+	if(fio.saveToJSONFileSync( PATH.META_RELEASE_PROFILE, data )) {
+		return true;
+	}
+	
+	return false;
+};
+
+Storage.saveMetaGruopsProfilesSync = function( profiles ) {
+	var data = new Object();
+	data.version = VERSION_PROFILE_LIST;
+	data.description = DESCRIPTION_PROFILE_LIST;
+	data.profiles = profiles;
+	
+	if(fio.saveToJSONFileSync( PATH.META_GROUP_PROFILE, data )) {
 		return true;
 	}
 	
@@ -158,6 +206,43 @@ Storage.saveMetaProfileSync = function( profile ) {
 		profiles[ profile.name ] = profile;
 		console.log(profiles);
 		if( Storage.saveMetaProfilesSync(profiles) )
+			return true;
+		
+		return false;
+		
+	} else {
+		return false;
+	}
+};
+
+Storage.saveMetaReleaseProfileSync = function( profile ) {
+	var profiles = Storage.loadMetaReleaseSync();
+	
+	for(key in profile.target) {
+		delete profile.target[key].isActivity;
+	}
+	
+	if(profiles) {
+		profiles[ profile.name ] = profile;
+		console.log(profiles);
+		if( Storage.saveMetaReleasesProfilesSync(profiles) )
+			return true;
+		
+		return false;
+		
+	} else {
+		return false;
+	}
+};
+
+Storage.saveMetaGroupProfileSync = function( profile ) {
+	var profiles = Storage.loadMetaGroupsSync();
+
+	
+	if(profiles) {
+		profiles[ profile.name ] = profile;
+		console.log(profiles);
+		if( Storage.saveMetaGruopsProfilesSync(profiles) )
 			return true;
 		
 		return false;
@@ -186,6 +271,21 @@ Storage.deleteProfiles = function(list) {
 		try {
 			delete AdminManager.profiles[list[i]];
 			result = AdminManager.profiles;
+		} catch(e) {
+			return result;
+		} finally {
+			return result;
+		}
+	}
+};
+
+Storage.deleteReleaseProfiles = function(list) {
+	var result = null;
+	
+	for(var i = 0; i < list.length; i++) {
+		try {
+			delete AdminManager.releaseProfiles[list[i]];
+			result = AdminManager.releaseProfiles;
 		} catch(e) {
 			return result;
 		} finally {
@@ -354,6 +454,14 @@ Storage.loadLogcat = function( profileName, day, time, serial, index, callback )
 							);	
 	
 	fio.loadFile(logcatPath, callback);
+};
+
+Storage.loadLog = function( profileName, callback ) {
+	var logPath = path.join(PATH.STORAGE,
+						profileName + ".log"
+						);	
+	
+	fio.loadFile(logPath, callback);
 };
 
 Storage.loadMonkey = function( profileName, day, time, serial, index, callback ) {

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>배포생성</title>
+    <title>빌드생성</title>
     <script language="javascript" type="text/javascript" src="../../resources/lib/jquery.min.js"></script>
 	<script language="javascript" type="text/javascript" src="./admin_setting_client.js"></script>
 
@@ -12,7 +12,52 @@
 		
 	var edit_modes =null;
 	var arg = null;
+	//var mSourceList = null;
+	
+	function onLoad() {
+		
+	}
+	
+	function createSourceList( data ) {
+			
+		var app = "";
+		
+		var binary = "";
+		
+		console.log(data);
 
+		for(i = 0; i < data['source'].length; i++)
+		{
+			var k = data['source'][i];		
+			app += "<input type='checkbox' onclick='onCheckedApp(this);' name='sourceName' id='sourceName_" + k + "' value="+ k + "/>";
+			app += k;
+			app += "<br/>";
+		}
+		 
+		$("#source_list").empty();
+		$("#source_list").append(app);
+		
+		for(i = 0; i < data['binary'].length; i++)
+		{
+			var k = data['binary'][i];		
+			binary += "<input type='checkbox' onclick='onCheckedApp(this);' name='binaryName' id='binaryName_" + k + "' value="+ k + "/>";
+			binary += k;
+			binary += "<br/>";
+		}
+		 
+		$("#binary_list").empty();
+		$("#binary_list").append(binary);
+		
+		/*
+		var list = mProfilesData[selectedProfile]['target'][selectedDevice].app;
+
+		for(var i = 0; i < list.length; i++) {
+			var app =  replaceAll( list[i], '.', '-' );
+			$("input[id='apkName_" + app + "']").attr('checked', true);
+		}
+		*/
+	}
+	
 	function onLoadEditProfiles(val){			
 			
 		if (typeof window.dialogArguments == "object"){	
@@ -63,9 +108,20 @@
 	//     return this.replace(/^\s*/, "").replace(/\s*$/, "");
 	// }
 	
-	function onClickSubmit(index){
+	function onClickSubmit(){
 		
-		  var name = $("#fname").val().toLowerCase();
+		    //var name = $("#fname").val().toLowerCase();
+			
+			
+			
+			var name = new Date();
+			var domain = $("#hour").val();
+			var ersNo = $("#min").val();
+			
+			var branch = $("#repo").val();
+			var tag = $("#tag").val();
+			var desc = $('#desc').val();
+			
             //var schedule = $("#schedule").val();
             var event = $("#event").val();
             var count = $("#count").val();
@@ -83,7 +139,7 @@
 			var weeks = arrWeek.join(',');
 			var days = $("#day").val();
 			var months = $("#month").val();
-			
+			/*
 			if (!frmchk_char(name, 0)) {
             	alert("The first letter of the profile name is alphabet. And Alphabet, Numbers and '_' can be input");
             	$("#fname").focus();
@@ -123,6 +179,7 @@
 				alert(" 0 or negative number is not available ");
 				return;
 			}
+			*/
 
 		if (edit_modes==true)
 		{
@@ -191,27 +248,28 @@
 			window.close();
 
 		}else{
-			
+			/*
 			for(var k in mProfilesData){
 				if (k == name) {
             		alert("profile name is existed.");
                     $("#fname").focus();
                     return;
             	}
-            }
+            }*/
 
 			$.ajax({
 				cache: false,
 				type: "POST",
-				url: "/request_admin_new_profile",
+				url: "/request_admin_new_release",
 				dataType: "json",
-				data: JSON.stringify({name:name, event:event, count:count, seed_start:start_seed, seed_end:end_seed, seed_interval:interval, throttle:throttle, mins:mins, hours:hours, weeks:weeks, days:days, months:months }),
+				data: JSON.stringify({name:name, desc:desc, domain:domain, ersNo:ersNo, branch:branch, tag:tag, mins:"", hours:"", weeks:"", days:"", months:"" }),
 				error: function () {
 
 				},
 				success: function (data) {
+					//console.log("++: " + data);
 					mProfilesData = data;
-					console.log(mProfilesData)
+					//console.log(mProfilesData)
 					createNew();
 				}
 			});          
@@ -239,69 +297,88 @@
 		$(opener.document).find("#profile_list").append(thead);
 		
 		var i = 0; 
-		
-		for(var k in mProfilesData){
-			//console.log(k); 
-			var pf = "<tr><td width='30%'>";
-			if(i==0)
-				pf += "<input type='checkbox' checked name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-			else
-				pf += "<input type='checkbox' name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-			//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
-			pf += k;
-			pf += "</td><td width='15%'>";
-			//TODO
-			pf += "<div id='edit_button" + i + "'>";
-			pf += "<button type='button' onclick='onClickEdit("+ i +")'>Edit</button><br/>";
-			pf += "</div>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='evt" + i + "'>";
-			pf += mProfilesData[k]["config"]["event"];
-			pf += "</div>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='total" + i + "'>";
-			pf += mProfilesData[k]["config"]["count"];
-			pf += "</div>";
-			pf += "</td>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='seed_start" + i + "'>";
-			pf += mProfilesData[k]["config"]["seed_start"];
-			pf += "</div>";
-			pf += "</td>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='seed_end" + i + "'>";
-			pf += mProfilesData[k]["config"]["seed_end"];
-			pf += "</div>";
-			pf += "</td>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='seed_interval" + i + "'>";
-			pf += mProfilesData[k]["config"]["seed_interval"];
-			pf += "</div>";
-			pf += "</td>";
-			pf += "</td><td width='15%'>";
-			pf += "<div id='throttle" + i + "'>";
-			pf += mProfilesData[k]["config"]["throttle"];
-			pf += "</div>";
-			pf += "</td><td width='15%'>";
+	
+	for(var k in mProfilesData){
+		//console.log(k);	
+		var pf = "<tr><td width='30%'>";
+		//if(i==0)
+		//	pf += "<input type='checkbox' checked name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
+		//else
+		//pf += "<input type='checkbox' name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
+		//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
+		//pf += k;
+		//pf += "<a href ='#' onclick=requestDeviceList();>" + k + "</a>";
+		//pf += mProfilesData[k]["config"]["seqNo"];
+		pf += i;
+		pf += "</td><td width='15%'>";
+		//TODO
+		pf += "<div id='evt" + i + "'>";
+		pf += mProfilesData[k]["config"]["domain"];
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='evt" + i + "'>";
+		pf += mProfilesData[k]["config"]["ersNo"];
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='total" + i + "'>";
+		pf += mProfilesData[k]["config"]["branch"];
+		pf += "</div>";
+		pf += "</td>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='seed_start" + i + "'>";
+		pf += mProfilesData[k]["config"]["tag"];
+		pf += "</div>";
+		pf += "</td>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='seed_end" + i + "'>";
+		pf += mProfilesData[k]["config"]["type"];
+		pf += "</div>";
+		pf += "</td>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='seed_interval" + i + "'>";
+		pf += mProfilesData[k]["config"]["requester"];
+		pf += "</div>";
+		pf += "</td>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='throttle" + i + "'>";
+		pf += mProfilesData[k]["config"]["requestDate"];
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='throttle" + i + "'>";
+		pf += mProfilesData[k]["config"]["builder"];
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='throttle" + i + "'>";
+		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + mProfilesData[k]["config"]["status"] + "</a>";
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='throttle" + i + "'>";
+		pf += mProfilesData[k]["config"]["buildDate"];
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
 
-			if (mProfilesData[k]["activity"]==true ){
-				pf += "<div id='alarm_button" + i + "'>";
-				pf += "<button type='button' style='width:50px' id="+k+" onclick='onClickAlarm()' value='off' >OFF</button><br/>";
-				pf += "</div>";
-			}else{
-				pf += "<div id='alarm_button" + i + "'>";
-				pf += "<button type='button' style='width:50px' id="+k+" onclick='onClickAlarm()' value='on' >ON</button><br/>";
-				pf += "</div>";
-			}
-			
-			pf += "</td>";
-			pf += "</tr>";
-			
-			$(opener.document).find("#profile_list").append(pf); 
-			
-			profile_attr[i] = mProfilesData[k];
-			i++;
+		if (mProfilesData[k]["activity"]){
+
+			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >Test Build</button>";
+
+		}		
+
+		pf += "</td><td width='15%'>";
+		
+		if (mProfilesData[k]["activity"]){
+
+			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >Real Build</button>";
+
 		}
+		
+		pf += "</td>"
+		pf += "</tr>";
+
+		$("#profile_list").append(pf);
+		
+		profile_attr[i] = mProfilesData[k];
+		i++;
+	}
 		
 		window.opener.location.reload();
 		window.close();	
@@ -309,7 +386,19 @@
 
 	function selectedHour(val) {
 		var f = document.form;
-			
+		
+		f.hour.value = f.select_hour.value;
+		
+		if(val == "itempage1")
+			f.repo.value = "gmkt/Admin";
+		else if(val == "itempage2")
+			f.repo.value = "gmkt/itemPage2";
+		else if(val == "itempage3")
+			f.repo.value = "iac/single";
+		else
+			f.repo.value = "iac/helloworld";
+		
+		/*	
 		if(f.hour.value != ""){
 			if(f.hour.value.charAt(f.hour.value.length-1)==","){
 				f.hour.value += f.select_hour.value + "," ;
@@ -335,13 +424,35 @@
 				}
 			}
 			//TODO
-	
+		*/
 	 }
 
 	 function selectedMinute(val) {	
 		var f = document.form;
+		
+		f.min.value = f.select_min.value;
+		
+		f.branch.value = "bc_" + val + "_001";
+		f.tag.value = "REL_" + val + "_001";
+		
+		$.ajax({
+			cache: false,
+			type: "GET",
+			url: "/request_admin_source_list",
+			dataType: "json",
+			data: {
+				
+			},
+			error: function () {
 
-		if(f.min.value != ""){
+			},
+			success: function (data) {
+				
+				createSourceList(data);
+			}
+		});
+
+		/*if(f.min.value != ""){
 			if(f.min.value.charAt(f.min.value.length-1)==","){
 				f.min.value += f.select_min.value + "," ;
 			}else{
@@ -349,7 +460,7 @@
 			}
 		}else{
 			f.min.value += f.select_min.value + ",";
-		}
+		}*/
 	 }
 
 	 function selectedDay(val) {
@@ -383,117 +494,123 @@
 
 </head>
 
-<body onLoad="onLoadEditProfiles()" >
+<body onLoad="onLoad()" >
 <form name="form">
       <table>
-        <tr>
-            <td>
-                name
-            </td>
-            <td>
-                <input type="text" name="fname" id="fname"/>
-            </td>
-        </tr>
-         <tr>
-            <td>
-                event count
-            </td>
-            <td>
-                <input type="text" name="event" maxlength="5" id="event" value="100"/>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                total count
-            </td>
-            <td>
-                <input type="text" name="count" maxlength="5" id="count" value="200"/>
-            </td>
-        </tr>
-<!--        <tr>
-            <td>
-                seed
-            </td>
-            <td>
-                <input type="text" name="seed" maxlength="4" id="start_seed" value="0"/> ~ <input type="text" name="2" maxlength="4" id="end_seed" value="990"/>
-            </td>
-        </tr> -->
-        <tr>
-            <td>
-                interval
-            </td>
-            <td>
-                <input type="text" name="3" maxlength="4" id="interval" value="10"/>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                throttle
-            </td>
-            <td>
-                <input type="text" name="throttle" maxlength="4" id="throttle" value="0"/>
-            </td>
-        </tr>		
-		<tr>
-            <td colspan="2">
-               <hr size="1">
-            </td>
-        </tr>
+       
+        	
+		
 		<tr>
             <td>
-				Hour
+				Domain
 			</td>
             <td>
 				<input type="text" name="hour" id="hour" value="" /> 
 				<select name="select_hour" id="select_hour" onchange="selectedHour(this.options[this.selectedIndex].value)">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-					<option value="13">13</option>
-					<option value="14">14</option>
-					<option value="15">15</option>
-					<option value="16">16</option>
-					<option value="17">17</option>
-					<option value="18">18</option>
-					<option value="19">19</option>
-					<option value="20">20</option>
-					<option value="21">21</option>
-					<option value="22">22</option>
-					<option value="23">23</option>
-					<option value="24">24</option>
+					<option value="itempage1">itempage1</option>
+					<option value="itempage2">itempage2</option>
+					<option value="itempage3">itempage3</option>
 				</select>
 				(ex:0,12,23)	
 			</td>
         </tr>
 		<tr>
             <td>
-				Minute
+				ERS No.
 			</td>
             <td>
 				<input type="text" name="min" id="min" />
 				<select name="select_min" id="select_min" onchange="selectedMinute(this.options[this.selectedIndex].value)">
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-					<option value="25">25</option>
-					<option value="30">30</option>
-					<option value="35">35</option>
-					<option value="35">45</option>
-					<option value="50">50</option>
-					<option value="55">55</option>
+					<option value="2999">2999</option>
+					<option value="3000">3000</option>
+					<option value="3001">3001</option>
+					<option value="3002">3002</option>
+					<option value="3003">3003</option>
 				</select>
 				(ex:0,30,59)	
             </td>
         </tr>
+		
+		<tr>
+            <td>
+                Desc:
+            </td>
+            <td>
+				<input type="text" name="desc" maxlength="20" id="desc" value="0"/>
+            </td>
+        </tr>
+		
+		<tr>
+            <td colspan="2">
+               <hr size="1">
+            </td>
+        </tr>
+		
+		<tr>
+            <td>
+                Repository:
+            </td>
+            <td>
+                <!--<input type="text" name="throttle" maxlength="4" id="throttle" value="0"/>-->
+				<input type="text" name="repo" maxlength="20" id="repo" value="0"/>
+				<!--<div id='repo'>/gmkt/Admin</div>-->
+            </td>
+        </tr>
+		
+		<tr>
+            <td>
+                Branch:
+            </td>
+            <td>
+				<input type="text" name="branch" maxlength="20" id="branch" value="0"/>
+            </td>
+        </tr>	
+		
+		<tr>
+            <td>
+                Tag:
+            </td>
+            <td>
+				<input type="text" name="tag" maxlength="20" id="tag" value="0"/>
+            </td>
+        </tr>	
+		
+		
+		
+		
+		
+		
+		<tr>
+            <td colspan="2">
+               <hr size="1">
+            </td>
+        </tr>
+		
+		<tr>
+            <td colspan="2">
+               Source list:
+            </td>
+        </tr>
+		
+		<tr>
+            <td colspan="2">
+               <div id="source_list" style="height:100px;width:100%;overflow:auto;">
+            </td>
+        </tr>
+		
+		<tr>
+            <td colspan="2">
+               Binary list:
+            </td>
+        </tr>
+		
+		<tr>
+            <td colspan="2" >
+               <div id="binary_list" style="height:100px;width:100%;overflow:auto;">
+            </td>
+        </tr>
+		
+		<!--
 		<tr>
 			<td>
 				Week
@@ -509,76 +626,11 @@
             </td>	
 			    
         </tr>
-		<tr>
-            <td>
-				Day
-            </td>
-            <td>
-				<input type="text" name="day" id="day" />
-					<select name="select_day" id="select_day" onchange="selectedDay(this.options[this.selectedIndex].value)">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-					<option value="13">13</option>
-					<option value="14">14</option>
-					<option value="15">15</option>
-					<option value="16">16</option>
-					<option value="17">17</option>
-					<option value="18">18</option>
-					<option value="19">19</option>
-					<option value="20">20</option>
-					<option value="21">21</option>
-					<option value="22">22</option>
-					<option value="23">23</option>
-					<option value="24">24</option>
-					<option value="25">25</option>
-					<option value="26">26</option>
-					<option value="27">27</option>
-					<option value="28">28</option>
-					<option value="29">29</option>
-					<option value="30">30</option>
-					<option value="31">31</option>
-				</select>
-				(ex:1,17,31)					
-			</td>
-        </tr>
-		<tr>
-            <td>
-				Month
-            </td>
-            <td>
-				<input type="text" name="month" id="month" />
-				<select name="select_mon" id="select_month" onchange="selectedMonth(this.options[this.selectedIndex].value)">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-				</select>
-				(ex:1,5,12)
-				
-			</td>
-        </tr>
+		-->
 
         <tr align="center">
             <td colspan="2">
-				<br><input type="button" onclick="onClickSubmit()" value="Save" />
+				<br><input type="button" onclick="onClickSubmit()" value="생성" />
 				<input type="button" onclick="window.close()" value="Close" />
             </td>
         <tr>

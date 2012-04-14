@@ -52,7 +52,7 @@ var profile_meta = {
 
 $(document).ready(function () {
 	requestProfileList();
-	requestDeviceList();
+	//requestDeviceList();
 });
 
 function requestProfileList() {
@@ -60,7 +60,7 @@ function requestProfileList() {
 	 $.ajax({
 		cache: false,
 		type: "GET",
-		url: "/request_admin_profile_list",
+		url: "/request_admin_release_profile_list",
 		dataType: "json",
 		data: {
 			
@@ -129,7 +129,7 @@ function requestDeleteProfile(list) {
 	$.ajax({
 		cache: false,
 		type: "POST",
-		url: "/request_admin_delete_profile",
+		url: "/request_admin_delete_release_profile",
 		dataType: "json",
 		data: JSON.stringify(list),
 		error: function () {
@@ -214,7 +214,7 @@ function createProfileList(data) {
 	var thead = "<thead>";
 	thead += "<tr>"; 
 	thead += "<th scope='col'></th>";
-	thead += "<th scope='col'>RelNo</th>";
+	thead += "<th scope='col'>RelNo.</th>";
 	thead += "<th scope='col'>Domain</th>";
 	thead += "<th scope='col'>ERS No.</th>";
 	thead += "<th scope='col'>Git Branch</th>";
@@ -243,50 +243,50 @@ function createProfileList(data) {
 		
 		//pf += "<a href ='#' onclick=requestDeviceList();>" + k + "</a>";
 		pf += "</td><td width='15%'>";
-		pf += k;
+		pf += i;
 		pf += "</td><td width='15%'>";
 		pf += "<div id='evt" + i + "'>";
-		pf += mProfilesData[k]["config"]["event"];
+		pf += data[k]["config"]["domain"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='evt" + i + "'>";
-		pf += mProfilesData[k]["config"]["event"];
+		pf += data[k]["config"]["ersNo"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='total" + i + "'>";
-		pf += mProfilesData[k]["config"]["count"];
+		pf += data[k]["config"]["branch"];
 		pf += "</div>";
 		pf += "</td>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='seed_start" + i + "'>";
-		pf += mProfilesData[k]["config"]["seed_start"];
+		pf += data[k]["config"]["tag"];
 		pf += "</div>";
 		pf += "</td>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='seed_end" + i + "'>";
-		pf += mProfilesData[k]["config"]["seed_end"];
+		pf += data[k]["config"]["type"];
 		pf += "</div>";
 		pf += "</td>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='seed_interval" + i + "'>";
-		pf += mProfilesData[k]["config"]["seed_interval"];
+		pf += data[k]["config"]["requester"];
 		pf += "</div>";
 		pf += "</td>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='throttle" + i + "'>";
-		pf += mProfilesData[k]["config"]["throttle"];
+		pf += data[k]["config"]["desc"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='throttle" + i + "'>";
-		pf += mProfilesData[k]["config"]["throttle"];
+		pf += data[k]["config"]["requestDate"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='throttle" + i + "'>";
-		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + mProfilesData[k]["config"]["throttle"] + "</a>";
+		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + data[k]["config"]["status"] + "</a>";
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 
-		if (mProfilesData[k]["activity"]){
+		if (data[k]["activity"]){
 
 			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >배포</button>";
 
@@ -294,7 +294,7 @@ function createProfileList(data) {
 
 		pf += "</td><td width='15%'>";
 		
-		if (mProfilesData[k]["activity"]){
+		if (data[k]["activity"]){
 
 			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >Roll Back</button>";
 
@@ -305,7 +305,7 @@ function createProfileList(data) {
 
 		$("#profile_list").append(pf);
 		
-		profile_attr[i] = mProfilesData[k];
+		profile_attr[i] = data[k];
 		i++;
 	}
 }
@@ -706,7 +706,7 @@ function replaceAll(str, orgStr, repStr) {
 // Popup window code
  function newPopup(url) {
  
- 	var style ="dialogWidth:500px;dialogHeight:450px";
+ 	var style ="dialogWidth:500px;dialogHeight:500px";
  	window.showModalDialog( url, "profileEdit", style );
  	
 // 	//popupWindow = window.open(

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -73,6 +73,34 @@ fu.setHandler("/request_admin_profile_list",function(req, res) {
 		res.simpleJSON( 400, { error: "!request_admin_profile_list" } );
 });
 
+fu.setHandler("/request_admin_release_profile_list",function(req, res) {
+	
+	de.log('[request_admin_release_profile_list]');
+	var params = qs.parse(url.parse(req.url).query);
+	
+	g_manager.setProfiles();
+	var profiles = g_manager.getReleaseProfiles();
+	
+	if(profiles != null)
+		res.simpleJSON( 200, profiles );
+	else
+		res.simpleJSON( 400, { error: "!request_admin_release_profile_list" } );
+});
+
+fu.setHandler("/request_admin_group_list",function(req, res) {
+	
+	de.log('[request_admin_group_list]');
+	var params = qs.parse(url.parse(req.url).query);
+		
+	g_manager.setGroupProfiles();
+	var list = g_manager.getGroupProfiles();
+	
+	if(list != null)
+		res.simpleJSON( 200, list );
+	else
+		res.simpleJSON( 400, { error: "!request_admin_group_list" } );
+});
+
 fu.setHandler("/request_admin_app_list",function(req, res) {
 	
 	de.log('[request_admin_app_list]');
@@ -94,6 +122,30 @@ fu.setHandler("/request_admin_app_list",function(req, res) {
 	else
 		res.simpleJSON( 400, { error: "!request_admin_app_list" } );
 });
+
+fu.setHandler("/request_admin_source_list",function(req, res) {
+	
+	de.log('[request_admin_source_list]');
+	var params = qs.parse(url.parse(req.url).query);
+	
+	if( DUMMY_SOURCE_LIST != null )
+		res.simpleJSON( 200, DUMMY_SOURCE_LIST );
+	else
+		res.simpleJSON( 400, { error: "!request_admin_source_list" } );
+});
+
+fu.setHandler("/request_admin_server_list",function(req, res) {
+	
+	de.log('[request_admin_server_list]');
+	var params = qs.parse(url.parse(req.url).query);
+	
+	if( DUMMY_SERVER_LIST != null )
+		res.simpleJSON( 200, DUMMY_SERVER_LIST );
+	else
+		res.simpleJSON( 400, { error: "!request_admin_server_list" } );
+});
+
+
 
 fu.setHandler("/request_admin_new_profile",function(req, res) {
 	
@@ -124,6 +176,66 @@ fu.setHandler("/request_admin_new_profile",function(req, res) {
 	}
 });
 
+fu.setHandler("/request_admin_new_release",function(req, res) {
+	
+	de.log('[request_admin_new_release]');
+	//var params = qs.parse(url.parse(req.url).query);
+	
+	if(req.method == 'POST'){
+		var body = '';
+		
+		req.on('data', function (data) {
+			body += data;
+		});
+		
+		req.on('end', function () {
+			var data = JSON.parse(body);
+			
+			console.log("==>" + data);
+			g_manager.once('evt_added_release', function(data) {
+				if(data != null)
+					res.simpleJSON( 200, data );
+				else
+					res.simpleJSON( 400, { error: "!request_admin_new_release" } );
+			});
+
+			g_manager.newReleaseProfile( data );
+		});
+	} else if( req.method == 'GET' ){
+		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	
+	}
+});
+
+fu.setHandler("/request_admin_new_group",function(req, res) {
+	
+	de.log('[request_admin_new_group]');
+	//var params = qs.parse(url.parse(req.url).query);
+	
+	if(req.method == 'POST'){
+		var body = '';
+		
+		req.on('data', function (data) {
+			body += data;
+		});
+		
+		req.on('end', function () {
+			var data = JSON.parse(body);
+			
+			console.log("==>" + data);
+			g_manager.once('evt_added_group', function(data) {
+				if(data != null)
+					res.simpleJSON( 200, data );
+				else
+					res.simpleJSON( 400, { error: "!request_admin_new_group" } );
+			});
+
+			g_manager.newGroupProfile( data );
+		});
+	} else if( req.method == 'GET' ){
+		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	
+	}
+});
+
 
 fu.setHandler("/request_admin_delete_profile",function(req, res) {
 	
@@ -148,6 +260,35 @@ fu.setHandler("/request_admin_delete_profile",function(req, res) {
 			});
 
 			g_manager.deleteProfile( data );
+		});
+	} else if( req.method == 'GET' ){
+		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	
+	}	
+});
+
+fu.setHandler("/request_admin_delete_release_profile",function(req, res) {
+	
+	de.log('[request_admin_delete_release_profile]');
+	//var params = qs.parse(url.parse(req.url).query);
+	
+	if(req.method == 'POST'){
+		var body = '';
+		
+		req.on('data', function (data) {
+			body += data;
+		});
+		
+		req.on('end', function () {
+			var data = JSON.parse(body);
+
+			g_manager.once('evt_deleted_release_profile', function(data) {
+				if(data != null)
+					res.simpleJSON( 200, data );
+				else
+					res.simpleJSON( 400, { error: "!request_admin_delete_release_profile" } );
+			});
+
+			g_manager.deleteReleaseProfile( data );
 		});
 	} else if( req.method == 'GET' ){
 		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	
@@ -413,6 +554,19 @@ fu.setHandler("/request_admin_monkey_file",function(req, res) {
 			res.simpleJSON( 200, data );	
 	});
 });
+
+fu.setHandler("/request_admin_log_file",function(req, res) {
+	de.log('[request_admin_log_file]');
+	var params = qs.parse(url.parse(req.url).query);
+	
+	storage.loadLog(params.profile, function(err, data) {
+		if( err )
+			res.simpleJSON( 400, { error: "!request_admin_log_file" } );	
+		else
+			res.simpleJSON( 200, data );	
+	});
+});
+
 //	end result page requests
 
 

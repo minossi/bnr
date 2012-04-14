@@ -48,10 +48,133 @@ var mSystemData = {
 
 var mCurrentUID;
 
+
+var mData = null;
+
 $(document).ready(function () {
 	
-	requestJobList();
+	
+	//var btnElem = "<button type='button' onclick='onClickAllStop()'>All Stop</button><hr>";
+	var btnElem = "<table border='0px' width='100%'>";
+	btnElem += "<tr>";
+	btnElem += "<td>그룹 이름</td>";
+	btnElem += "</tr>";
+	btnElem += "<tr><td>"
+	btnElem += "<input style='width:98%' type='text' name='group_name' maxlength='30' id='group_name' value=''/>";
+	btnElem += "</td></tr>"
+	btnElem += "<tr>";
+	btnElem += "<td>설명</td>";
+	btnElem += "</tr>";
+	btnElem += "<tr>"
+	btnElem += "<td>"
+	btnElem += "<textarea name='group_desc' id='group_desc' style='width:98%' rows='4' cols='30'/>";
+	btnElem += "</td>"
+	btnElem += "</tr>"
+	btnElem += "<tr>"
+	btnElem += "<td align='right'>"
+	btnElem += "<button style='width:100px' type='button' onclick='onClickMake()'>생성</button>";
+	btnElem += "</td>"
+	btnElem += "</tr>"
+	btnElem += "</table><hr>";
+	
+	$("#group_top").empty();
+	$("#group_top").append(btnElem);
+	
+	
+	requestServerList();
+	requestGroupList();
 });
+
+function onClickMake() {
+	var list = selectedServer();
+	
+	var name = $("#group_name").val();
+	var desc = $("#group_desc").val();
+	
+	$.ajax({
+		cache: false,
+		type: "POST",
+		url: "/request_admin_new_group",
+		dataType: "json",
+		data: JSON.stringify({
+			list: list,
+			name: name,
+			desc: desc
+		}),
+		error: function () {
+
+		},
+		success: function (data) {
+			console.log(data);
+			mData = data;
+			createGroupList( data );
+		}
+	});
+}
+
+function replaceAll(str, orgStr, repStr) {
+
+	var result = str.split(orgStr).join(repStr);
+	//console.log(result);
+	return result;
+
+}
+
+function selectedServer() {
+
+	 var list = new Array();
+
+	 $("input[name='serverName']:checkbox:checked").each(function(){
+													list.push(replaceAll($(this).val(), '/', ''));
+													});	
+
+	return list;
+}
+
+function requestServerList() {
+	
+	 $.ajax({
+		cache: false,
+		type: "GET",
+		url: "/request_admin_server_list",
+		dataType: "json",
+		data: {
+			
+		},
+		error: function () {
+
+		},
+		success: function ( data ) {
+			console.log( data );
+			//refreshJobProcess( data );
+			//requestJobProcess();
+			createServerList( data );
+		}
+	});
+}
+
+function requestGroupList() {
+	
+	 $.ajax({
+		cache: false,
+		type: "GET",
+		url: "/request_admin_group_list",
+		dataType: "json",
+		data: {
+			
+		},
+		error: function () {
+
+		},
+		success: function ( data ) {
+			console.log( data );
+			//refreshJobProcess( data );
+			//requestJobProcess();
+			mData = data;
+			createGroupList( data );
+		}
+	});
+}
 
 function requestJobList() {
 	
@@ -92,22 +215,6 @@ function requestJobProcess() {
 				
 			refreshJobProcess( data );
 			requestJobProcess();
-			// console.log('===', mCurrentUID);
-			// 			var isExisted = true;
-			// 			for(var key in data) {
-			// 				for( var i = 0; i < data[ key ].length; i++ ) {
-			// 					var infos = data[ key ][ i ];
-			// 					var uid = infos.uid;
-			// 					
-			// 					if(uid == mCurrentUID)
-			// 						isExisted = true;
-			// 					else
-			// 						isExisted = false;
-			// 				}
-			// 			}
-			// 			
-			// 			if(!isExisted)
-			// 				clearSystemGraph();
 		}
 	});
 }
@@ -196,6 +303,63 @@ function requestMonitoringSystem( serial, emitter ) {
 			requestMonitoringSystem( serial, emitter );
 		}
 	});
+}
+
+function createGroupList( data ) 
+{
+	$("#group_list").empty();
+
+	var thead = "<thead>";
+	thead += "<tr>"; 
+	thead += "<th scope='col'>No.</th>";
+	thead += "<th scope='col'>Name</th>";
+	thead += "<th scope='col'>설명</th>";
+	thead += "</tr>";
+	thead += "</thead>";
+	$("#group_list").append(thead);
+	
+	var i = 0; 
+	var pf = "";
+	for(var k in data){
+		//console.log(k);	
+		pf = "<tr><td width='30%'>";
+		pf += i;
+		pf += "</td><td width='15%'>";
+		//TODO
+		pf += "<div id='evt" + i + "'>";
+		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + data[k]["name"] + "</a>";
+		pf += "</div>";
+		pf += "</td><td width='15%'>";
+		pf += "<div id='evt" + i + "'>";
+		pf += data[k]["desc"];
+		pf += "</div>";
+		pf += "</td>"
+		pf += "</tr>";
+		i++;
+		
+		$("#group_list").append(pf);
+	}
+	
+	
+}
+
+function onClickProfile( name )
+{
+	console.log(name);
+	console.log(mData);
+	var data = mData[name];
+	
+	var elem = '<table>';
+	
+	for( var i = 0; i< data['server'].length; i++ ) {
+		
+		elem += '<tr><td>' + data['server'][i] + '</td></tr>';
+	}
+	
+	elem += '</table>';
+	console.log(elem);
+	$('#monitor_view').empty();
+	$('#monitor_view').append(elem);
 }
 
 function refreshJobProcess( data )
@@ -368,6 +532,22 @@ function clearSystemGraph() {
 	mSystemData.network = [[],[]];
 	
 	//onClickDevice( serial );
+}
+
+function createServerList( data )
+{
+	var server = "";
+
+	for(var i = 0; i < data['builder'].length; i++)
+	{
+		var k = data['builder'][i];		
+		server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
+		server += k;
+		server += "<br/>";
+	}
+	 
+	$("#server_list").empty();
+	$("#server_list").append(server);
 }
 
 function createSystemGraph()

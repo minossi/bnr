@@ -2,8 +2,8 @@
 	"version": "0.1.0",
 	"description": "ACTS meta profiles infomation using json syntax",
 	"profiles": {
-		"fsdfds": {
-			"name": "fsdfds",
+		"standard": {
+			"name": "standard",
 			"activity": true,
 			"mail": {
 				"to": "",
@@ -12,246 +12,25 @@
 				"activity": true
 			},
 			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
+				"seqNo": 0,
+				"domain": "itempage3",
+				"ersNo": 3000,
+				"branch": "bc_3000_001",
+				"tag": "REL_3000_001",
+				"type": "DR",
+				"requester": "김태희",
+				"requestDate": "2012-04-05",
+				"builder": "이민정",
+				"status": "빌드완료",
+				"buildDate": "2012-04-08"
 			},
 			"target": {},
 			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"afdsd": {
-			"name": "afdsd",
-			"activity": true,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"zgdgdgd": {
-			"name": "zgdgdgd",
-			"activity": false,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"gsdgsdg": {
-			"name": "gsdgsdg",
-			"activity": false,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"fsfsdfd": {
-			"name": "fsfsdfd",
-			"activity": false,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"fsdfdsf": {
-			"name": "fsdfdsf",
-			"activity": true,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
-			}
-		},
-		"fdfdf": {
-			"name": "fdfdf",
-			"activity": false,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"event": 100,
-				"count": 200,
-				"seed_interval": 10,
-				"seed_start": 0,
-				"seed_end": 1990,
-				"throttle": 0
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
+				"mins": [],
+				"hours": [],
+				"days": [],
+				"weeks": [],
+				"months": []
 			}
 		}
 	}
