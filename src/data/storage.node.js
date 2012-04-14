@@ -458,6 +458,16 @@ Storage.loadLogcat = function( profileName, day, time, serial, index, callback )
 
 Storage.loadLog = function( profileName, callback ) {
 	var logPath = path.join(PATH.STORAGE,
+						"build_log",
+						profileName + ".log"
+						);	
+	
+	fio.loadFile(logPath, callback);
+};
+
+Storage.loadReleaseLog = function( profileName, callback ) {
+	var logPath = path.join(PATH.STORAGE,
+						"release_log",
 						profileName + ".log"
 						);	
 	

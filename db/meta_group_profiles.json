@@ -9,15 +9,6 @@
 			"server": [
 				"172.30.136.243"
 			]
-		},
-		"rewtrt": {
-			"name": "rewtrt",
-			"desc": "rttrtrtr",
-			"activity": true,
-			"server": [
-				"172.30.136.243",
-				"172.30.136.243"
-			]
 		}
 	}
 }

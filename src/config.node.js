@@ -132,6 +132,18 @@ PROFILE = {
 	}
 }
 
+REALEASE_HISTORY = {
+	date: "2012-04-05",
+	who: "서태지",
+	what: [
+		"a.asp",
+		"a.asp",
+		"a.asp",
+		"a.asp"
+	],
+	type: "스테이징 배포"
+}
+
 RELEASE_PROFILE_LIST = {
     version: VERSION_PROFILE_LIST,
 	description: 'ACTS meta profiles infomation using json syntax',
@@ -157,6 +169,9 @@ RELEASE_PROFILE_LIST = {
 				status: "배포완료",
 				desc: "옥션 아이템 페이지"
 			},
+			history: [
+				REALEASE_HISTORY
+			],
 			target:{
 			},
 			schedule: {
@@ -194,6 +209,8 @@ GROUP_PROFILE = {
 	]
 }
 
+
+
 RELEASE_PROFILE = {
 	name: '',
 	activity: false,
@@ -215,6 +232,9 @@ RELEASE_PROFILE = {
 		status: "",
 		desc: ""
 	},
+	history: [
+		REALEASE_HISTORY
+	],
 	target: {
 	},
 	schedule: {
@@ -225,6 +245,8 @@ RELEASE_PROFILE = {
 		months:[]
 	}
 }
+
+
 
 DUMMY_SOURCE_LIST = {
 	source: [

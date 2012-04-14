@@ -35,7 +35,7 @@
 require('../config.node');
 var de 					= require('../utils/debugger.node');
 var fio 				= require('../utils/file_io.node');
-var nodemailer 			= require('nodemailer');
+//var nodemailer 			= require('nodemailer');
 var fs 					= require('fs');
 
 var TAG 				= 'Mail';

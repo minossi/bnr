@@ -23,6 +23,19 @@
 				"status": "배포완료",
 				"desc": "옥션 아이템 페이지"
 			},
+			"history": [
+				{
+					"date": "2012-04-05",
+					"who": "서태지",
+					"what": [
+						"a.asp",
+						"a.asp",
+						"a.asp",
+						"a.asp"
+					],
+					"type": "스테이징 배포"
+				}
+			],
 			"target": {},
 			"schedule": {
 				"mins": [],
@@ -30,46 +43,6 @@
 				"days": [],
 				"weeks": [],
 				"months": []
-			}
-		},
-		"2012-04-14T09:00:53.885Z": {
-			"name": "2012-04-14T09:00:53.885Z",
-			"activity": false,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"seqNo": 0,
-				"domain": "itempage2",
-				"ersNo": "3001",
-				"branch": "gmkt/itemPage2",
-				"tag": "REL_3001_001",
-				"type": "DR",
-				"requester": "kim tae hi",
-				"requestDate": "2012-04-14T09:00:53.889Z",
-				"status": "wait",
-				"desc": "0"
-			},
-			"target": {},
-			"schedule": {
-				"mins": [
-					""
-				],
-				"hours": [
-					""
-				],
-				"days": [
-					""
-				],
-				"weeks": [
-					""
-				],
-				"months": [
-					""
-				]
 			}
 		}
 	}
