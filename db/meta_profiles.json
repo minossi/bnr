@@ -1,0 +1,258 @@
+{
+	"version": "0.1.0",
+	"description": "ACTS meta profiles infomation using json syntax",
+	"profiles": {
+		"fsdfds": {
+			"name": "fsdfds",
+			"activity": true,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"afdsd": {
+			"name": "afdsd",
+			"activity": true,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"zgdgdgd": {
+			"name": "zgdgdgd",
+			"activity": false,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"gsdgsdg": {
+			"name": "gsdgsdg",
+			"activity": false,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"fsfsdfd": {
+			"name": "fsfsdfd",
+			"activity": false,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"fsdfdsf": {
+			"name": "fsdfdsf",
+			"activity": true,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		},
+		"fdfdf": {
+			"name": "fdfdf",
+			"activity": false,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"event": 100,
+				"count": 200,
+				"seed_interval": 10,
+				"seed_start": 0,
+				"seed_end": 1990,
+				"throttle": 0
+			},
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
+		}
+	}
+}
