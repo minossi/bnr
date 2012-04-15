@@ -34,6 +34,7 @@
 var spawn     		= require('child_process').spawn;
 var fs 				= require('fs');
 var path 			= require('path');
+var fio     		= require('../utils/file_io.node');
 var de 				= require('../utils/debugger.node');
 
 var TAG 			= 'NGit';
@@ -65,7 +66,17 @@ ngit.clone = function( workspace, repo, callback) {
         
     cmd.stdout.on('data',function(data){ callback(null, data);});
     cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+    cmd.on('exit', function(code){ 
+        
+        if( repo == GIT_REPO.GMKT_BN || repo == GIT_REPO.ACT_BN ) {
+            if( !fio.isRealPathSync( PATH.WORK_REPO_GIT_GMKT_LOG ) ) {
+        	    de.log(TAG, 'there is not existed storage folder');
+			    fio.mkdirSync( PATH.WORK_REPO_GIT_GMKT_LOG );
+		    }
+        }
+        
+        callback('exit', null);
+    });
     
     return cmd;
 };
@@ -219,6 +230,22 @@ ngit.deleteRTag = function( workspace, tag, callback ) {
 
 
 
+
+/*
+ *    MGit
+ */
+ngit.m_version = function( callback ) {
+
+    var cmd;
+    
+    cmd = spawn( PATH.MGIT, ["v"] );
+        
+    cmd.stdout.on('data',function(data){ callback(null, data);});
+    cmd.stderr.on('data',function(data){ callback(null, data);});
+    cmd.on('exit', function(code){ callback('exit', null);});
+    
+    return cmd;
+}
 
 
 

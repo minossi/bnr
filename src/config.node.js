@@ -70,6 +70,7 @@ GIT_REPO = {
 G_MAIN = new Object();	// main global
 
 PATH = {
+    
 	HOME:process.cwd(),
 	STORAGE:path.join(process.cwd(), NAME_STORAGE),
 	LOG:path.join(process.cwd(), NAME_STORAGE, NAME_LOG),
@@ -81,45 +82,17 @@ PATH = {
     WORK_REPO_GIT_ACT: path.join( process.cwd(), NAME_STORAGE, "iac", "st"),
     WORK_REPO_GIT_GMKT_BN: path.join( process.cwd(), NAME_STORAGE, "gmkt", "rt"),
     WORK_REPO_GIT_ACT_BN: path.join( process.cwd(), NAME_STORAGE, "iac", "rt"),
-    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh")
+    WORK_REPO_GIT_GMKT_LOG: path.join( process.cwd(), NAME_STORAGE, "gmkt", "rt", "log"),
+    WORK_REPO_GIT_ACT_LOG: path.join( process.cwd(), NAME_STORAGE, "iac", "rt", "log"),
+    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh"),
+    MULTIGIT: path.join( process.cwd(), "src", "adb", "multimodule.sh")
 };
 
 PROFILE_LIST = {
     version: VERSION_PROFILE_LIST,
 	description: 'ACTS meta profiles infomation using json syntax',
 	profiles: {
-		standard: {
-			name: 'standard',
-			activity: true,
-			mail: {
-				to: "",
-				cc: "",
-				bcc: "",
-				activity: true
-			},
-			config: {
-				seqNo: 0,
-				domain: "itempage3",
-				ersNo: 3000,
-				branch: "bc_3000_001",
-				tag: "REL_3000_001",
-				type: "DR",
-				requester: "김태희",
-				requestDate: "2012-04-05",
-				builder: "이민정",
-				status: "빌드완료",
-				buildDate: "2012-04-08"
-			},
-			target:{
-			},
-			schedule: {
-				mins:[],
-				hours:[],
-				days:[],
-				weeks:[],
-				months:[]
-			}
-		}
+		
 	}
 };
 
@@ -172,40 +145,7 @@ RELEASE_PROFILE_LIST = {
     version: VERSION_PROFILE_LIST,
 	description: 'ACTS meta profiles infomation using json syntax',
 	profiles: {
-		standard: {
-			name: 'standard',
-			activity: true,
-			mail: {
-				to: "",
-				cc: "",
-				bcc: "",
-				activity: true
-			},
-			config: {
-				seqNo: 0,
-				domain: "itempage3",
-				ersNo: 3000,
-				branch: "bc_3000_001",
-				tag: "REL_3000_001",
-				type: "DR",
-				requester: "이민정",
-				requestDate: "2012-04-05",
-				status: "배포완료",
-				desc: "옥션 아이템 페이지"
-			},
-			history: [
-				REALEASE_HISTORY
-			],
-			target:{
-			},
-			schedule: {
-				mins:[],
-				hours:[],
-				days:[],
-				weeks:[],
-				months:[]
-			}
-		}
+		
 	}
 };
 

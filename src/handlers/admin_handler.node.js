@@ -134,6 +134,17 @@ fu.setHandler("/request_admin_source_list",function(req, res) {
 		res.simpleJSON( 400, { error: "!request_admin_source_list" } );
 });
 
+fu.setHandler("/request_admin_binary_list",function(req, res) {
+    
+	de.log('[request_admin_binary_list]');
+	var params = qs.parse(url.parse(req.url).query);
+	
+	if( DUMMY_SOURCE_LIST != null )
+		res.simpleJSON( 200, DUMMY_SOURCE_LIST );
+	else
+		res.simpleJSON( 400, { error: "!request_admin_binary_list" } );
+});
+
 fu.setHandler("/request_admin_server_list",function(req, res) {
 	
 	de.log('[request_admin_server_list]');
