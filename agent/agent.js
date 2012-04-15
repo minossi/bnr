@@ -5,57 +5,131 @@ var http = require('http');
 var sio = require('socket.io');
 var cio = require('socket.io-client');
 var program = require('commander');
-
-var app = http.createServer(function(req, res) {
-	fs.readFile(__dirname + '/index.html', function (err, data) {
-		if (err) {
-			res.writeHead(500);
-			return res.end('Error loading index.html');
-		}
-		res.writeHead(200);
-		res.end(data);
-	});
-});
+var fu = require('./fu.node');
 
 program
 	.version('0.0.1')
-	.option('-u, --url <address>', 'BnR Agent Url to connect')
-	.option('-p, --port <port>', 'BnR Agent Port')
-	.option('-n, --fqn <FQN>', 'BnR Agent Fully Qualified Name')
-	.option('-m, --mode <mode>', 'BnR Agent Mode [build | deploy | operation]')
+	.option('-u, --url <url>',   'BnR Agent Url to connect', String, '')
+	.option('-p, --port <port>', 'BnR Agent Port [8080]', Number, 8080)
+	.option('-F, --FQN <FQN>',   'BnR Agent Fully Qualified Name', String, 'agent')
+	.option('-m, --mode <mode>', 'BnR Agent Mode [build | deploy | operation]', String, 'build')
 	.parse(process.argv);
 
-var url = program.url ? program.url:'http://localhost:8080';
-var port = program.port ? parseInt(program.port): 8080;
-var fqn = program.fqn ? program.name: 'agent';
-var mode = program.mode ? program.mode: 
+console.log("FQN:       \t%s", program.FQN);
+console.log("Parent Url:\t%s", program.url);
+console.log("Role Mode: \t%s", program.mode);
+console.log("Service Port:\t%s", program.port);
 
-var io = sio.listen(app);
 
-app.listen(port);
+function keys(obj){
+	var ks = [];
+	for(k in obj){
+		ks.push(k);
+	}
+	return ks;
+}
+
+var clients = {};
+
+var io = sio.listen(fu.server);
+
+//log off
+//io.set('log', false);
+io.set('log level', 2); 
+//var levels = [
+//    'error'
+//  , 'warn'
+//  , 'info'
+//  , 'debug'
+//];
 
 io.sockets.on('connection', function (socket) {
-	socket.emit('who', program.name, function( are_you ) {
-		console.log('connect to' + are_you);
-  	});
+	
+//	console.log('id: %s', socket.id);
 
- 	socket.on('who', function (data, fn) {
-		fn(program.name);
+//	socket.emit('who', program.FQN, function( are_you ) {
+//		console.log('connect to' + are_you);
+//  	});
+
+	clients[socket.id] = {mode:'', port:0, fqn:'', url:'',alive:true};
+
+ 	socket.on('checkin', function (whoami, fn) {
+		
+		console.log(whoami);	
+
+		clients[socket.id]['fqn'] = whoami.fqn;
+		clients[socket.id]['url'] = whoami.url;
+		
+		fn(true);
 	});
 
-	socket.on('file', function (fileName, fn) {
-		fs.readFile(__dirname + '/' + fileName, function( err, data) {
+	socket.on('clients', function(data, fn) {
+		fn(clients);
+	});
+
+	socket.on('push file', function (data, fn) {
+
+		fs.writeFile(__dirname + '/' + data.name,data.body, 'binary', function(err) {
+			if (err){ 
+				fn(false);
+				throw err
+			};
+			console.log('file: %s saved', data.name);
+			fn(true);
+		});
+	});
+	
+	socket.on('dir', function (dir, fn) {
+
+		fs.readdir(__dirname + '/' + dir, function( err, files) {
 			
-			if(err) {
-				console.log('file read error' + err);
-				process.exit();
+			if(err) throw err;
+			
+			fn(files);
+		});
+	});
+	
+	socket.on('pull file', function (filePath, fn) {
+		
+		fs.readFile(__dirname + '/' + filePath, 'binary', function( err, data) {
+						
+			if(err) throw err; 
+			
+			if( Buffer.isBuffer(data) ){
+				
+				console.log('buffer object');
+				fn({body:data.toString()});
+
+			}else{
+				
+				console.log('other object');
+				fn({body:data});
+			
 			}
-			fn(data);
 		});
 	});
 
 	socket.on('disconnect', function() {
 		console.log('disconnect agent');
+		delete clients[socket.id];
 	});
 });
+
+
+if( program.url ){
+
+	var client = cio.connect(program.url);
+	
+	client.emit('checkin', {mode:program.mode, port:program.port, fqn:program.FQN, url:program.url}, function(result) {
+		
+		if(result)
+			console.log("checkin complete!");
+		else
+			console.log("checkin error");
+	});
+	
+} else {
+	console.log('run agent service');
+	fu.listen(program.port, null);
+}
 
