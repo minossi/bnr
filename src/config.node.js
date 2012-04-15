@@ -70,6 +70,7 @@ GIT_REPO = {
 G_MAIN = new Object();	// main global
 
 PATH = {
+    
 	HOME:process.cwd(),
 	STORAGE:path.join(process.cwd(), NAME_STORAGE),
 	LOG:path.join(process.cwd(), NAME_STORAGE, NAME_LOG),
@@ -81,7 +82,8 @@ PATH = {
     WORK_REPO_GIT_ACT: path.join( process.cwd(), NAME_STORAGE, "iac", "st"),
     WORK_REPO_GIT_GMKT_BN: path.join( process.cwd(), NAME_STORAGE, "gmkt", "rt"),
     WORK_REPO_GIT_ACT_BN: path.join( process.cwd(), NAME_STORAGE, "iac", "rt"),
-    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh")
+    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh"),
+    MULTIGIT: path.join( process.cwd(), "src", "adb", "multimodule.sh")
 };
 
 PROFILE_LIST = {
