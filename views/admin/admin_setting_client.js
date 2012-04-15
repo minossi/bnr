@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -251,7 +251,7 @@ function createProfileList(data) {
 	thead += "<th scope='col'>요청자</th>";
 	thead += "<th scope='col'>요청일</th>";
 	thead += "<th scope='col'>빌드자</th>";
-	thead += "<th scope='col'>배포상태</th>";
+	thead += "<th scope='col'>빌드상태</th>";
 	thead += "<th scope='col'>빌드날짜</th>";
 	thead += "<th scope='col'>테스트 빌드</th>";
 	thead += "<th scope='col'>리얼 빌드</th>";

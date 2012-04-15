@@ -1,37 +1,5 @@
 {
 	"version": "0.1.0",
 	"description": "ACTS meta profiles infomation using json syntax",
-	"profiles": {
-		"standard": {
-			"name": "standard",
-			"activity": true,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"seqNo": 0,
-				"domain": "itempage3",
-				"ersNo": 3000,
-				"branch": "bc_3000_001",
-				"tag": "REL_3000_001",
-				"type": "DR",
-				"requester": "김태희",
-				"requestDate": "2012-04-05",
-				"builder": "이민정",
-				"status": "빌드완료",
-				"buildDate": "2012-04-08"
-			},
-			"target": {},
-			"schedule": {
-				"mins": [],
-				"hours": [],
-				"days": [],
-				"weeks": [],
-				"months": []
-			}
-		}
-	}
+	"profiles": {}
 }

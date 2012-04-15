@@ -1,49 +1,5 @@
 {
 	"version": "0.1.0",
 	"description": "ACTS meta profiles infomation using json syntax",
-	"profiles": {
-		"standard": {
-			"name": "standard",
-			"activity": true,
-			"mail": {
-				"to": "",
-				"cc": "",
-				"bcc": "",
-				"activity": true
-			},
-			"config": {
-				"seqNo": 0,
-				"domain": "itempage3",
-				"ersNo": 3000,
-				"branch": "bc_3000_001",
-				"tag": "REL_3000_001",
-				"type": "DR",
-				"requester": "이민정",
-				"requestDate": "2012-04-05",
-				"status": "배포완료",
-				"desc": "옥션 아이템 페이지"
-			},
-			"history": [
-				{
-					"date": "2012-04-05",
-					"who": "서태지",
-					"what": [
-						"a.asp",
-						"a.asp",
-						"a.asp",
-						"a.asp"
-					],
-					"type": "스테이징 배포"
-				}
-			],
-			"target": {},
-			"schedule": {
-				"mins": [],
-				"hours": [],
-				"days": [],
-				"weeks": [],
-				"months": []
-			}
-		}
-	}
+	"profiles": {}
 }

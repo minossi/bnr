@@ -54,12 +54,32 @@ resolve_relative_url ()
 }
 
 #
-# Add a new submodule to the working tree, .gitmodules and the index
+# return true which contain .gitmodules
 #
-# $@ = repo path
-#
-# optional branch is stored in global branch variable
-#
+cmd_clone2()
+{
+	#1) git clone <repository url> <path>
+	#2) cd <path>
+	#3) update
+	#4) switch to master branch
+	if test "$#" != "2"
+	then
+		usage
+	fi
+	
+	git clone $1 $2 &&
+	cd "$2"
+	
+	if [[ -a .gitmodules  ]]
+	then
+	    update &&
+	    git submodule foreach 'git checkout master'	    
+	    echo "true"
+	else 
+	    echo "false"
+	fi
+}
+
 cmd_clone()
 {
 	#1) git clone <repository url> <path>
@@ -76,6 +96,7 @@ cmd_clone()
 	update &&
 	git submodule foreach 'git checkout master'
 }
+
 
 cmd_branch()
 {
@@ -388,7 +409,7 @@ usage ()
 while test $# != 0 && test -z "$command"
 do
 	case "$1" in
-	clone | branch | tag | checkout | status | push | pull )
+	clone2 | clone | branch | tag | checkout | status | push | pull )
 		command=$1
 		;;
 	-q|--quiet)

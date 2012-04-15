@@ -36,6 +36,7 @@ var de 				= require('./utils/debugger.node');
 var finder 			= require('./utils/finder.node');
 var storage 		= require('./data/storage.node');
 var ngit            = require('./adb/ngit.node');
+var ffilter         = require('./adb/file_filter.node');
 var events 			= require('events');
 var Profile 		= require('./stuff/profile.node');
 var Release			= require('./stuff/release.node');
@@ -456,6 +457,41 @@ AdminManager.prototype.doRun = function( data, isSave ) {
 		profile.makeNowJobs( devices );
 	}
 }
+
+
+AdminManager.prototype.getSourceList = function( domain ) {
+    
+    var path = "";
+    
+    if( domain == '') {
+        path = PATH.WORK_REPO_GIT_GMKT;
+    } else {
+        path = PATH.WORK_REPO_GIT_ACT;
+    }
+    
+    ffilter.xml( path, 'xml', function( err, data ) {
+        
+        this.emit( 'evt_source_lsit', data );
+    });
+}
+
+AdminManager.prototype.getBinaryList = function( domain ) {
+    
+    var path = "";
+    
+    if( domain == '') {
+        path = PATH.WORK_REPO_GIT_GMKT_BN;
+    } else {
+        path = PATH.WORK_REPO_GIT_ACT_BN;
+    }
+    
+    ffilter.xml( path, 'xml', function( err, data ) {
+        
+        this.emit( 'evt_binary_lsit', data );
+    });
+}
+
+
 
 
 
