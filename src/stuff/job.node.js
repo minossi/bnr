@@ -77,7 +77,7 @@ function Job(g_member, serial, model, app, profile) {
 	this.GUID = generatorGUID();
 	
 	createMonkeys(this.serial, this.profile, this);
-};
+}
 
 Job.prototype = new events.EventEmitter();
 Job.prototype.constructor = Job;
@@ -86,12 +86,12 @@ Job.prototype.destructor = function() {
 };
 module.exports = Job;
 
-Job.prototype.getGUID = function() { return this.GUID };
-Job.prototype.getSerial = function() { return this.serial };
-Job.prototype.getProfileName = function() { return this.profile.getName() };
-Job.prototype.getJobDay = function() { return this.startTime.day };
-Job.prototype.getJobTime = function() { return this.startTime.time };
-Job.prototype.getMonkeyIndex = function() { return this.monkeyIndex };
+Job.prototype.getGUID = function() { return this.GUID; };
+Job.prototype.getSerial = function() { return this.serial; };
+Job.prototype.getProfileName = function() { return this.profile.getName(); };
+Job.prototype.getJobDay = function() { return this.startTime.day; };
+Job.prototype.getJobTime = function() { return this.startTime.time; };
+Job.prototype.getMonkeyIndex = function() { return this.monkeyIndex; };
 Job.prototype.getApps = function() { return this.app; };
 Job.prototype.getMonkeyCount = function() { return this.profile.getCaseCount(); };
 Job.prototype.getCurrentMonkey = function() { return this.currentMonkey; };
@@ -203,7 +203,7 @@ createTestDirs = function(profileName, serial) {
 	var day = date.toLogDay();
 	var time = date.toLogTime();
 	
-	if( !storage.makeDayDirSync(profileName, day, serial) );
+	if( !storage.makeDayDirSync(profileName, day, serial) )
 		de.log(TAG, 'there is existed test, today');
 		
 	storage.loadSummaryDay(profileName, day , function(err, data) {
@@ -217,7 +217,7 @@ createTestDirs = function(profileName, serial) {
 					de.log(TAG, err);
 			});
 		} else {
-			;
+			
 		}
 	});
 	
@@ -276,7 +276,7 @@ summary = function( self ) {
 			break;
 		}
 	});
-}
+};
 
 notifyByMail = function( self, job ) {
 	

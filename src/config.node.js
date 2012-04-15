@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -38,15 +38,34 @@ PORT						= '8090';
 NAME_STORAGE 				= 'db';
 NAME_LOG					= 'log';
 NAME_DATA					= 'data';
-META_PROFILE 				= 'meta_profiles.json';
-META_RELEASE_PROFILE 		= 'meta_release_profiles.json';
-META_GROUP_PROFILE 			= 'meta_group_profiles.json';
+
 VERSION_PROFILE_LIST 		= '0.1.0';
 DESCRIPTION_PROFILE_LIST 	= 'ACTS meta profiles infomation using json syntax';
 VERSION_LOG 				= '0.1.0'
 INTERVAL_DEVICE_LIST 		= 5  * 1000;
 INTERVAL_ALARM 				= 10 * 1000;
 INTERVAL_SYSTEM_LOG 		= 1000;
+
+
+/*
+ *  for EBay
+ */
+
+META_PROFILE     			= 'meta_profiles.json';
+META_RELEASE_PROFILE 		= 'meta_release_profiles.json';
+META_GROUP_PROFILE 			= 'meta_group_profiles.json';
+NAME_GMKT                   = 'gmkt';
+NAME_ACT                    = 'act';
+
+
+GIT_REPO = {
+    GMKT:   "ssh://10.0.1.5:29419/gmkt/st/Admin.git gmkt/st",
+    ACT:    "ssh://10.0.1.5:29419/gmkt/st/Admin.git iac/st",
+    GMKT_BN:"ssh://10.0.1.5:29419/gmkt/rt/Admin.git gmkt/rt",
+    ACT_BN: "ssh://10.0.1.5:29419/gmkt/st/Admin.git iac/rt",
+};
+// end for EBay
+
 
 G_MAIN = new Object();	// main global
 
@@ -57,7 +76,12 @@ PATH = {
 	DATA:path.join(process.cwd(), NAME_STORAGE, NAME_DATA),
 	META_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_PROFILE),
 	META_RELEASE_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_RELEASE_PROFILE),
-	META_GROUP_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_GROUP_PROFILE)
+	META_GROUP_PROFILE:path.join(process.cwd(), NAME_STORAGE, META_GROUP_PROFILE),
+    WORK_REPO_GIT_GMKT: path.join( process.cwd(), NAME_STORAGE, "gmkt", "st"),
+    WORK_REPO_GIT_ACT: path.join( process.cwd(), NAME_STORAGE, "iac", "st"),
+    WORK_REPO_GIT_GMKT_BN: path.join( process.cwd(), NAME_STORAGE, "gmkt", "rt"),
+    WORK_REPO_GIT_ACT_BN: path.join( process.cwd(), NAME_STORAGE, "iac", "rt"),
+    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh")
 };
 
 PROFILE_LIST = {
@@ -101,7 +125,7 @@ PROFILE_LIST = {
 
 PROFILE = {
 	name: '',
-	activity: false,
+	activity: true,
 	mail: {
 		to: "",
 		cc: "",
@@ -213,7 +237,7 @@ GROUP_PROFILE = {
 
 RELEASE_PROFILE = {
 	name: '',
-	activity: false,
+	activity: true,
 	mail: {
 		to: "",
 		cc: "",

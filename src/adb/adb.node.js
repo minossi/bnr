@@ -156,7 +156,7 @@ adb.isBootComplete = function(device,callback) {
 	  if(code == 0 || code == 255) {
 		  if( recall == true) {
 			  setTimeout( function() {
-			      Adb.isBootComplete(device,callback);
+			      adb.isBootComplete(device,callback);
 				  //console.log('setTimeout');
 			  }, 5 * 1000);
 		  } else {

@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -35,6 +35,7 @@ require('./config.node');
 var de 				= require('./utils/debugger.node');
 var finder 			= require('./utils/finder.node');
 var storage 		= require('./data/storage.node');
+var ngit            = require('./adb/ngit.node');
 var events 			= require('events');
 var Profile 		= require('./stuff/profile.node');
 var Release			= require('./stuff/release.node');
@@ -64,6 +65,8 @@ function AdminManager() {
 	
 	if(storage.isMakeStorage()) {
 		storage.makeStorage();
+        
+        this.clone();
 	}
 	
 	this.setProfiles();
@@ -75,9 +78,9 @@ function AdminManager() {
 	this.setGroupProfiles();
 	this.groupPool = this.setGroupProfilePool();
 	//this.addSchedulers();
+    
+    
 };
-
-
 
 AdminManager.prototype = new events.EventEmitter();
 //require('util').inherits(Scheduler, events.EventEmitter);
@@ -87,6 +90,29 @@ AdminManager.prototype.destructor = function() {
 };
 // Export this file as a module
 module.exports = AdminManager;
+
+AdminManager.prototype.clone = function() {
+
+    ngit.clone( PATH.STORAGE, GIT_REPO.GMKT, function(err, data ) {
+        
+        console.log( "clone: " + data );
+    });
+    
+    ngit.clone( PATH.STORAGE, GIT_REPO.GMKT_BN, function(err, data ) {
+    
+        console.log( "clone: " + data );
+    });
+    
+//    ngit.clone( PATH.WORK_REPO_GIT_ACT, GIT_REPO.ACT, function(err, data ) {
+//        
+//        console.log( "clone: " + data );
+//    });
+//    
+//    ngit.clone( PATH.WORK_REPO_GIT_ACT_BN, GIT_REPO.ACT_BN, function(err, data ) {
+//    
+//        console.log( "clone: " + data );
+//    });
+}
 
 
 AdminManager.prototype.getProfiles = function() {	return this.profiles; }
@@ -270,8 +296,6 @@ AdminManager.prototype.newProfile = function(config) {
 	profile.name = config.name;
 	
 	//	set config
-	console.log("@@@: " + profile.config.domain);
-	console.log("@@@: " + config.domain);
 	profile.config.domain = config.domain;
 	profile.config.ersNo = config.ersNo;
 	profile.config.branch = config.branch;
@@ -297,6 +321,27 @@ AdminManager.prototype.newProfile = function(config) {
 	} else {
 		this.emit( 'evt_added_profile', null );
 	}
+    
+    var workspace = '';
+    
+    if(config.domain == 'gmkt') {
+        
+        workspace = PATH.WORK_REPO_GIT_GMKT;
+        
+    } else if(config.domain == 'iac') {
+        
+        workspace = PATH.WORK_REPO_GIT_ACT;
+    }
+    
+    var branch = config.branch;
+    
+    console.log("==========");
+    console.log(config.branch, config.tag);
+    
+    ngit.addRBranch( PATH.WORK_REPO_GIT_GMKT, branch,  function( err, data ) {
+        
+        console.log( 'add remote branch: ' + data );
+    });
 }
 
 AdminManager.prototype.newReleaseProfile = function(config) {

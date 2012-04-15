@@ -1,8 +1,8 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>빌드생성</title>
+    <title>배포생성</title>
     <script language="javascript" type="text/javascript" src="../../resources/lib/jquery.min.js"></script>
 	<script language="javascript" type="text/javascript" src="./admin_setting_client.js"></script>
 
@@ -12,7 +12,9 @@
 		
 	var edit_modes =null;
 	var arg = null;
-	//var mSourceList = null;
+	
+    
+    
 	
 	function onLoad() {
 		
@@ -109,10 +111,8 @@
 	// }
 	
 	function onClickSubmit(){
-		
-		    //var name = $("#fname").val().toLowerCase();
-			
-			
+
+        
 			
 			var name = new Date();
 			var domain = $("#hour").val();
@@ -271,6 +271,8 @@
 					mProfilesData = data;
 					//console.log(mProfilesData)
 					createNew();
+                    
+                    
 				}
 			});          
 		}
@@ -385,53 +387,56 @@
 	}
 
 	function selectedHour(val) {
-		var f = document.form;
 		
-		f.hour.value = f.select_hour.value;
+        var f = document.form;
 		
-		if(val == "itempage1")
+		if(val == "gmkt") {
 			f.repo.value = "gmkt/Admin";
-		else if(val == "itempage2")
+            $("#select_min").val("3000").attr("selected", "selected");
+		} else if(val == "iac") {
 			f.repo.value = "gmkt/itemPage2";
-		else if(val == "itempage3")
-			f.repo.value = "iac/single";
-		else
-			f.repo.value = "iac/helloworld";
-		
-		/*	
-		if(f.hour.value != ""){
-			if(f.hour.value.charAt(f.hour.value.length-1)==","){
-				f.hour.value += f.select_hour.value + "," ;
-			}else{
-				f.hour.value += "," + f.select_hour.value;
-			}
-		}else{
-			f.hour.value += f.select_hour.value + ",";
+            $("#select_min").val("3001").attr("selected", "selected");
 		}
+        
+        f.hour.value = f.select_hour.value;
+        f.min.value = f.select_min.value;
+        
+        f.branch.value = "bc_" + val + "_001";
+    	f.tag.value = "REL_" + val + "_001";
+        
+        $.ajax({
+    		cache: false,
+			type: "GET",
+			url: "/request_admin_source_list",
+			dataType: "json",
+			data: {
+				
+			},
+			error: function () {
 
-		var A = f.hour.value 
-		var tmp = A.split(",");
-		var len = A.length;
-		
-		//TODO
-		// 중복 체크
-
-		for (var j=0; j<tmp.length; j++)
-		{
-			if (tmp[j] == val)
-			{
-				console.log("seem");
-				}
+			},
+			success: function (data) {
+				
+				createSourceList(data);
 			}
-			//TODO
-		*/
+		});
+		
 	 }
 
 	 function selectedMinute(val) {	
 		var f = document.form;
 		
-		f.min.value = f.select_min.value;
-		
+        if(val == "3000") {
+    		f.repo.value = "gmkt/Admin";
+            $("#select_hour").val("gmkt").attr("selected", "selected");
+		} else if(val == "3001") {
+			f.repo.value = "gmkt/itemPage2";
+            $("#select_hour").val("iac").attr("selected", "selected");
+		}
+        
+        f.hour.value = f.select_hour.value;
+        f.min.value = f.select_min.value;
+        
 		f.branch.value = "bc_" + val + "_001";
 		f.tag.value = "REL_" + val + "_001";
 		
@@ -451,16 +456,6 @@
 				createSourceList(data);
 			}
 		});
-
-		/*if(f.min.value != ""){
-			if(f.min.value.charAt(f.min.value.length-1)==","){
-				f.min.value += f.select_min.value + "," ;
-			}else{
-				f.min.value += "," + f.select_min.value;
-			}
-		}else{
-			f.min.value += f.select_min.value + ",";
-		}*/
 	 }
 
 	 function selectedDay(val) {
@@ -497,8 +492,15 @@
 <body onLoad="onLoad()" >
 <form name="form">
       <table>
-       
-        	
+        <tr>
+            <td>
+    			배포타입
+			</td>
+            <td>
+                <input type="radio" name="chk_info" value="test">test 배포
+                <input type="radio" name="chk_info" value="rel">real 배포     
+            </td>
+        </tr>
 		
 		<tr>
             <td>
@@ -507,11 +509,9 @@
             <td>
 				<input type="text" name="hour" id="hour" value="" /> 
 				<select name="select_hour" id="select_hour" onchange="selectedHour(this.options[this.selectedIndex].value)">
-					<option value="itempage1">itempage1</option>
-					<option value="itempage2">itempage2</option>
-					<option value="itempage3">itempage3</option>
+					<option value="gmkt">gmkt</option>
+    				<option value="iac">iac</option>
 				</select>
-				(ex:0,12,23)	
 			</td>
         </tr>
 		<tr>
@@ -521,13 +521,9 @@
             <td>
 				<input type="text" name="min" id="min" />
 				<select name="select_min" id="select_min" onchange="selectedMinute(this.options[this.selectedIndex].value)">
-					<option value="2999">2999</option>
 					<option value="3000">3000</option>
 					<option value="3001">3001</option>
-					<option value="3002">3002</option>
-					<option value="3003">3003</option>
-				</select>
-				(ex:0,30,59)	
+				</select>	
             </td>
         </tr>
 		

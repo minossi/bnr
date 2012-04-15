@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *

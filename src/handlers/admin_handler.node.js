@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -170,6 +170,7 @@ fu.setHandler("/request_admin_new_profile",function(req, res) {
 			});
 
 			g_manager.newProfile(data);
+
 		});
 	} else if( req.method == 'GET' ){
 		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	

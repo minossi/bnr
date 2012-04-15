@@ -36,7 +36,7 @@ var path 			= require('path');
 var de 				= require('../utils/debugger.node');
 var fio 			= require('../utils/file_io.node');
 
-var TAG 			= 'AdminManager';
+var TAG 			= 'Storage';
 var Storage 		= exports;
 
 

@@ -57,11 +57,11 @@ ngit.version = function( callback ) {
     return cmd;
 };
 
-ngit.clone = function( workspace, project, repo, callback) {
+ngit.clone = function( workspace, repo, callback) {
 	
     var cmd;
     
-    cmd = spawn( PATH.BGIT, [ 'c', workspace, repo ]);
+    cmd = spawn( PATH.BGIT, [ "c", workspace, repo ] );
         
     cmd.stdout.on('data',function(data){ callback(null, data);});
     cmd.stderr.on('data',function(data){ callback(null, data);});
