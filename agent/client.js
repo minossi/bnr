@@ -95,8 +95,8 @@ program
 		socket.on('connect', function() {	
 			
 			socket.emit('push to agent', job, function(result){
-					console.log('send file complete');
-					process.exit();
+				console.log('send file complete');
+				process.exit();
 			});
 		});
 	});

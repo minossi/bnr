@@ -41,11 +41,11 @@ var Job 				= require('../stuff/job.node');
 var TAG 				= 'Group';
 
 // Define the constructor
-function Group(g_member, data) {
+function Group(g_member, data, client) {
 	de.log(TAG,'NEW');
 	this.g_member = g_member;
 	this.profile = data;
-	
+	this.client = client;
 	//createProfileLog(this.getName());
 	//this.addScheduler();
 }

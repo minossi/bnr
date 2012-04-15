@@ -2,12 +2,13 @@
 	"version": "0.1.0",
 	"description": "ACTS meta profiles infomation using json syntax",
 	"profiles": {
-		"auction": {
-			"name": "auction",
-			"desc": "",
+		"xx": {
+			"name": "xx",
+			"desc": "assada",
 			"activity": true,
 			"server": [
-				"172.30.136.243"
+				"1786840922799146488",
+				"830372338813957512"
 			]
 		}
 	}

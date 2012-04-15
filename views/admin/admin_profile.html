@@ -15,6 +15,8 @@
 
 	function onLoadEditProfiles(val){			
 			
+		requestGroupList();
+		
 		if (typeof window.dialogArguments == "object"){	
 			
 			var f = document.form;
@@ -408,6 +410,43 @@
 			f.month.value += f.select_month.value + ",";
 		}
 	 }
+	 
+	 
+	 
+	 function requestGroupList() {
+	 	
+	 	$.ajax({
+				cache: false,
+				type: "GET",
+				url: "/request_admin_group_list",
+				dataType: "json",
+				data: {},
+				error: function () {
+
+				},
+				success: function (data) {
+					//mProfilesData = data;
+					console.log(data)
+					createGroupList(data);
+				}
+			});
+	 }
+	 
+	 function createGroupList(data) {
+	 	
+	 	console.log(data);
+	 	
+	 	var elem = "<select name='select_build_gruop' id='select_build_gruop' onchange='selectedBuildGroup(this.options[this.selectedIndex].value)'>";
+	 	for(var k in data) {
+	 		elem += "<option value='" + k + "'>" + k + "</option>";
+	 	}
+		
+		console.log(elem);
+	 	elem += "</select>"
+					
+		$("#group_list").empty();
+		$("#group_list").append(elem);
+	 }
 	 </script>
 
 </head>
@@ -438,6 +477,15 @@
 					<option value="3000">3000</option>
                     <option value="3001">3001</option>
 				</select>	
+            </td>
+        </tr>
+	
+			<tr>
+            <td>
+				Build group.
+			</td>
+            <td>
+				<div id="group_list"></div>	
             </td>
         </tr>
 		

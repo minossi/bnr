@@ -40,6 +40,7 @@ var events 			= require('events');
 var Profile 		= require('./stuff/profile.node');
 var Release			= require('./stuff/release.node');
 var Group			= require('./stuff/group.node');
+var fu   			= require('./fu.node');
 //var Device 			= require('./stuff/device.node');
 //var DeviceScheduler = require('./scheduler/device_scheduler.node');
 
@@ -78,7 +79,7 @@ function AdminManager() {
 	this.setGroupProfiles();
 	this.groupPool = this.setGroupProfilePool();
 	//this.addSchedulers();
-    
+    console.log('AdminManager: ', fu.clients);
     
 };
 

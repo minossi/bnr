@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -39,6 +39,8 @@ var GRAPH_URL = [ "/request_admin_monitoring_cpu",
 				"/request_admin_monitoring_network" ];
 				
 var GRAPH_EMITTER = [ 'system_cpu', 'system_memory', 'system_network' ];
+
+var mClients={};
 
 var mSystemData = {
 	'cpu': [ [] ],
@@ -148,7 +150,10 @@ function requestServerList() {
 			console.log( data );
 			//refreshJobProcess( data );
 			//requestJobProcess();
-			createServerList( data );
+			
+			mClients = data;
+			
+			createServerList( mClients );
 		}
 	});
 }
@@ -351,9 +356,10 @@ function onClickProfile( name )
 	
 	var elem = '<table>';
 	
-	for( var i = 0; i< data['server'].length; i++ ) {
+//	for( var i = 0; i< data['server'].length; i++ ) {
+	for( var k in mClients) {
 		
-		elem += '<tr><td>' + data['server'][i] + '</td></tr>';
+		elem += '<tr><td>' + mClients[k].fqn + '</td></tr>';
 	}
 	
 	elem += '</table>';
@@ -538,11 +544,12 @@ function createServerList( data )
 {
 	var server = "";
 
-	for(var i = 0; i < data['builder'].length; i++)
+//	for(var i = 0; i < data['builder'].length; i++)
+	for(var k in data)
 	{
-		var k = data['builder'][i];		
+		var client = data[k];		
 		server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
-		server += k;
+		server += client.fqn;
 		server += "<br/>";
 	}
 	 

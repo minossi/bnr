@@ -139,8 +139,8 @@ fu.setHandler("/request_admin_server_list",function(req, res) {
 	de.log('[request_admin_server_list]');
 	var params = qs.parse(url.parse(req.url).query);
 	
-	if( DUMMY_SERVER_LIST != null )
-		res.simpleJSON( 200, DUMMY_SERVER_LIST );
+	if( fu.clients != null )
+		res.simpleJSON( 200, fu.clients );
 	else
 		res.simpleJSON( 400, { error: "!request_admin_server_list" } );
 });

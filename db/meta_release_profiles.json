@@ -44,6 +44,59 @@
 				"weeks": [],
 				"months": []
 			}
+		},
+		"2012-04-15T13:13:01.408Z": {
+			"name": "2012-04-15T13:13:01.408Z",
+			"activity": true,
+			"mail": {
+				"to": "",
+				"cc": "",
+				"bcc": "",
+				"activity": true
+			},
+			"config": {
+				"seqNo": 0,
+				"domain": "gmkt",
+				"ersNo": "3000",
+				"branch": "gmkt/Admin",
+				"tag": "REL_3000_001",
+				"type": "DR",
+				"requester": "kim tae hi",
+				"requestDate": "2012-04-15T13:13:01.414Z",
+				"status": "wait",
+				"desc": "0"
+			},
+			"history": [
+				{
+					"date": "2012-04-05",
+					"who": "서태지",
+					"what": [
+						"a.asp",
+						"a.asp",
+						"a.asp",
+						"a.asp"
+					],
+					"type": "스테이징 배포"
+				}
+			],
+			"target": {},
+			"schedule": {
+				"mins": [
+					""
+				],
+				"hours": [
+					""
+				],
+				"days": [
+					""
+				],
+				"weeks": [
+					""
+				],
+				"months": [
+					""
+				]
+			}
 		}
 	}
 }

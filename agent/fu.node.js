@@ -29,9 +29,6 @@ var fs 				= require("fs");
 var sys 			= require("sys");
 var url 			= require("url");
 var path 			= require('path');
-var sio             = require('socket.io');
-var cio             = require('socket.io-client');
-//var program         = require('commander');
 
 DEBUG 				= false;
 
@@ -147,144 +144,39 @@ fu.staticHandler = function (filename) {
   }
 };
 
-fu.clients = {};
-var sockets = {};
+//https://gist.github.com/742162
+fu.mkdir_p =  function (path, mode, callback, position) {
+    mode = mode || 0777;
+    position = position || 0;
+    parts = require('path').normalize(path).split('/');
 
-var io = sio.listen(fu.server);
+    if (position >= parts.length) {
+        if (callback) {
+            return callback();
+        } else {
+            return true;
+        }
+    }
 
-io.set('log', false);
-//io.set('log level', 2); 
-//var levels = [
-//    'error' 
-//  , 'warn'
-//  , 'info'
-//  , 'debug'
-//];
-io.sockets.on('connection', function (socket) {
-	
-	console.log(fu.clients);
-	
- 	socket.on('checkin', function (whoami, fn) {
-		
-		console.log('checkin:', whoami);	
-
-		fu.clients[socket.id] = whoami;
-		sockets[socket.id] = socket;
-		
-		fn(socket.id);
-	});
-	
-	socket.on('clients', function(data, fn) {
-		console.log('CLIENTS:' + clients);
-		fn(clients);
-	});
-
-	socket.on('push file', function (data, fn) {
-
-		fs.writeFile(process.cwd() + '/' + data.name,data.body, 'binary', function(err) {
-			if (err){ 
-				fn(false);
-				throw err
-			};
-			console.log('file: %s saved', data.name);
-			fn(true);
-		});
-	});
-	
-	socket.on('push to agent', function(job, fn) {
-	//job = {agents:['id342432','234234234324234','234234234234'],
-	//		   dest: 'path\to\dir',
-	//		   files:[file-list,]
-	//       }
-		var fcount = job.agents.length * job.files.length;
-		
-		job.agents.forEach( function (socketId, idx) {
-			
-			console.log(socketId, idx);
-					
-			job.files.forEach( function(file, idx) {
-				
-				console.log('push file: ',file,idx);
-					
-				fs.readFile(process.cwd() + '/' + file, 'binary',function( err, fileData) {
-				
-					if(err) {
-						console.log('file read error' + err);
-						process.exit();
-					}
-					
-					var destSocket = sockets[socketId];
-					
-					if(destSocket){
-						console.log('dest file:' + file);
-						var subjob = {name:job.dest+'/'+file,body:fileData};
-						destSocket.emit('push file',subjob,function(result){
-							
-							if(result)
-								console.log('send %s complete', subjob.name);
-								
-							fcount -= 1;
-							
-							if(!fcount)
-								fn(true);
-
-						});
-					}else{
-						console.log('dest not found');
-					}
-				});
-			});
-		});
-	});
-	
-	socket.on('dir', function (dir, fn) {
-
-		fs.readdir(process.cwd() + '/' + dir, function( err, files) {
-			
-			if(err) throw err;
-			
-			fn(files);
-		});
-	});
-	
-	socket.on('pull file', function (filePath, fn) {
-		
-		fs.readFile(process.cwd() + '/' + filePath, 'binary', function( err, data) {
-						
-			if(err) throw err; 
-			
-			if( Buffer.isBuffer(data) ){
-				
-				console.log('buffer object');
-				fn({body:data.toString()});
-
-			}else{
-				
-				console.log('other object');
-				fn({body:data});
-			
-			}
-		});
-	});
-	
-	socket.on('reconnect', function() {
-		console.log('reconnect agent');
-				
-		fu.clients[socket.id] = socket;
-		sockets[socket.id] = socket;
-	});
-
-	socket.on('disconnect', function() {
-		console.log('disconnect agent');
-				
-		delete fu.clients[socket.id];
-		delete sockets[socket.id];
-	});
-});
-//	console.log('run agent service');
-//	
-//	fu.listen(program.port, null);
-
+    var directory = parts.slice(0, position + 1).join('/');
+    fs.stat(directory, function(err) {
+        if (err === null) {
+            mkdir_p(path, mode, callback, position + 1);
+        } else {
+            fs.mkdir(directory, mode, function (err) {
+                if (err) {
+                    if (callback) {
+                        return callback(err);
+                    } else {
+                        throw err;
+                    }
+                } else {
+                    mkdir_p(path, mode, callback, position + 1);
+                }
+            })
+        }
+    })
+}
 
 // stolen from jack- thanks
 fu.mime = {
