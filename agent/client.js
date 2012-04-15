@@ -40,14 +40,13 @@ program
 		console.log("list command...");
 		
 		var agent = sio.connect(url);
-		agent.emit('clients', {fqn:'test',url:'http://test.url'},function(result){
+		agent.emit('clients','',function(result){
 			console.log(result);
 			process.exit();
 		}); 	
-		agent.on('news', function(data) {
-			console.log(data);
-		});
 	});
+
+
 
 program
 	.command('push <agent-url> <file>')
@@ -60,7 +59,7 @@ program
 		
 		socket.on('connect', function() {	
 
-			fs.readFile(__dirname + '/' + filePath, function( err, data) {
+			fs.readFile(process.cwd() + '/' + filePath, function( err, data) {
 				
 				if(err) {
 					console.log('file read error' + err);
@@ -71,10 +70,37 @@ program
 					process.exit();
 				});
 			});
-
 		});
 	});
 	
+program
+	.command('pushagent <agent-url> <agent-id,agent-id>')
+	.description("connected angent list")
+	.action(function(url, agentString){
+	
+		var agentIds = agentString.split(',');
+		job = {agents:agentIds
+				,dest: 'push-test'
+				,files:['client.js', 'index.html', 'xxx.png']};
+				
+		//data = {agents:[],dest:'push-test',files:[]};
+		
+		//data.agents = JSON.parse('['+agents+']');
+		//data.files =  JSON.parse('['+files+']');
+	
+		console.log("push: %s", job);
+		
+		var socket = sio.connect(url);
+		
+		socket.on('connect', function() {	
+			
+			socket.emit('push to agent', job, function(result){
+					console.log('send file complete');
+					process.exit();
+			});
+		});
+	});
+		
 program
 	.command('dir <agent-url> <path>')
 	.description("list of directory which name is <path>")
@@ -108,7 +134,7 @@ program
 				
 				if(!data) throw 'pull file error';
 
-				fs.writeFile(__dirname + '/' + ofile, data.body, 'binary', function( err) {
+				fs.writeFile(process.cwd() + '/' + ofile, data.body, 'binary', function( err) {
 					if(err) throw err;	
 					
 					console.log('pull complete');
