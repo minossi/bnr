@@ -2,7 +2,6 @@
 
 var fs = require('fs');
 var sio = require('socket.io-client');
-var dl = require('delivery');
 var program = require('commander');
 var dns = require('dns');
 var os = require('os');
