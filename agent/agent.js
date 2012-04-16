@@ -17,8 +17,8 @@ function objprop(obj){
 		console.log ( k );
 	}
 }
-PATH_BUILD = "./build/st"
-PATH_BIN = "./build/rt"
+PATH_BUILD = "./"
+PATH_BIN = "./"
 
 //mkdirp(PATH_BUILD, 0755, function(err) {});
 //mkdirp(PATH_BIN, 0755, function(err) {});
@@ -92,6 +92,11 @@ Client.prototype.pushFile =  function (file, body, fn) {
 	});
 }
 
+function setLog( cmd ){
+    cmd.stdout.on('data',function(data){ console.log(data.toString());});
+    cmd.stderr.on('data',function(data){ console.log(data.toString());});
+}
+
 Client.prototype.realBuild = function ( job, fn) {
 	
 	console.log('real build');
@@ -122,21 +127,19 @@ Client.prototype.realBuild = function ( job, fn) {
 			console.log( "clone: " + data );
 			
 	// 3. msbuild
-			var cmd;
-			var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
-			cmd = spawn( bs, [] );
-				
-			cmd.stdout.on('data',function(data){ callback(null, data);});
-			cmd.stderr.on('data',function(data){ callback(null, data);});
+			//var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
+			var cmd = spawn( "msbuild.exe", [PATH_BUILD, "/m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5"] );
+			
+			setLog( cmd );
 			
 			cmd.on('exit', function(code){ 
 			
-				if(!code) throw 'exit error :' + code ;
+				if(code) throw 'exit error :' + code ;
 			
 				console.log("exit code: "+ code);
 				
 	// 4. clone binary repo
-				ngit.clone( PATH_BUILD, job.repo_bn, function(err, data ) {
+				ngit.clone( PATH_BIN, job.repo_bn, function(err, data ) {
 				
 					if(err) throw err;
 	// 5. copy st to rt

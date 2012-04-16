@@ -43,7 +43,7 @@ if [ "$cmd_var" == "c" ]; then
     
     echo "Cloning"
 	
-	rm -rf *
+	rm -rf gmkt/*
 	
     git clone $remote_var
 

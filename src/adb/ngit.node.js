@@ -100,6 +100,19 @@ ngit.checkout = function( workspace, branch, callback ) {
     return cmd;
 };
 
+ngit.copy = function( dest, callback ) {
+    
+    var cmd;
+    
+    cmd = spawn( "bash", [ PATH_BGIT, "cp" ] );
+        
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
+    
+    return cmd;
+};
+
 ngit.fetch = function( callback ) {
     
     var cmd;
