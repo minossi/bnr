@@ -8,8 +8,7 @@ var cio = require('socket.io-client');
 var program = require('commander');
 var mkdirp = require('mkdirp');
 var fu = require('./fu.node');
-var tar = require('tar'); 
-var fstream = require('fstream');
+
 
 function Client ( url ){
 	
@@ -25,8 +24,8 @@ function Client ( url ){
 	
 	io.on('pull file', function (path, fn) {
 		theClient.pullFile(path, fn);
-	}
-	
+	});
+		
 	io.on('build stage', function (job, fn) {
 
 		console.log('build test');
@@ -81,9 +80,9 @@ Client.prototype.pushFile =  function (file, body, fn) {
 	});
 }
 
-Client.prototype.pullFile =  function (path, fn) {
-	tar.
-}
+//Client.prototype.pullFile =  function (path, fn) {
+//	//tar.
+//}
 
 function Server( app ) { 
 
@@ -169,11 +168,11 @@ function Server( app ) {
 		
 		socket.on('release', function(job, fn) {
 			theServer.release(job, fn); 
-		}
+		});
 
 		socket.on('rollback', function(job, fn) {
 			theServer.rollback(job, fn); 
-		}
+		});
 	
 	
 		socket.on('reconnect', function() {
