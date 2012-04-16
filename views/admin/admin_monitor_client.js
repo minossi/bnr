@@ -28,9 +28,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var mClients={};
+var mClients = {};
 
-var mData = null;
+var mGroups = {};
 
 $(document).ready(function () {
 	
@@ -60,14 +60,19 @@ $(document).ready(function () {
 	$("#group_top").empty();
 	$("#group_top").append(btnElem);
 	
-	requestServerList();
+	//requestServerList();
 	requestGroupList();
 });
 
 function onClickMake() {
 	
-	var list = selectedServer();
-	var list2 = selectedClient();
+	var sn = $('input[name=serverName]:checked').val();
+
+	var tsn = "";
+	if(sn) 
+		tsn = replaceAll( sn , "/", "");
+	console.log( "1: " + sn );
+	var list = selectedClient();
 	
 	var name = $("#group_name").val();
 	var desc = $("#group_desc").val();
@@ -78,8 +83,8 @@ function onClickMake() {
 		url: "/request_admin_new_group",
 		dataType: "json",
 		data: JSON.stringify({
-			servers: list,
-			clients: list2,
+			server: tsn,
+			clients: list,
 			name:name,
 			desc: desc
 		}),
@@ -88,8 +93,9 @@ function onClickMake() {
 		},
 		success: function (data) {
 			console.log(data);
-			mData = data;
-			createGroupList( data );
+			mGroups = data.groups;
+			mClients = data.clients;
+			createGroupList();
 		}
 	});
 }
@@ -110,7 +116,7 @@ function onClickDelete() {
 
 		},
 		success: function (data) {
-			mData = data;
+			mGroups = data;
 			createGroupList( data );
 		}
 	});
@@ -119,7 +125,6 @@ function onClickDelete() {
 function replaceAll(str, orgStr, repStr) {
 
 	var result = str.split(orgStr).join(repStr);
-	//console.log(result);
 	return result;
 
 }
@@ -156,7 +161,7 @@ function selectedGroup() {
 	return list;
 }
 
-
+/*
 function requestServerList() {
 	
 	 $.ajax({
@@ -176,6 +181,7 @@ function requestServerList() {
 		}
 	});
 }
+*/
 
 function requestGroupList() {
 	
@@ -192,13 +198,14 @@ function requestGroupList() {
 		},
 		success: function ( data ) {
 			console.log( data );
-			mData = data;
-			createGroupList( data );
+			mClients = data.clients;
+			mGroups = data.groups;
+			createGroupList();
 		}
 	});
 }
 
-function createGroupList( data ) 
+function createGroupList() 
 {
 	var thead = "<table width='100%' border='1px'><thead>";
 	thead += "<tr>"; 
@@ -211,29 +218,26 @@ function createGroupList( data )
 
 	var i = 0; 
 	
-	for(var k in data){
+	for(var k in mGroups){
 		
-		var group = data[k];
-		var servers = group.server;
+		var group = mGroups[k];
+		var serverName = group.server;
+		console.log("1:    " + serverName);
 		thead += "<tr><td width='10%'>";
 		thead += "<input type='checkbox' name='groupName' id='groupName_" + k + "' value="+ k + "/>";
 		thead += "</td><td>";
 		
-		if(servers.length > 0) {
-			
-			var key = servers[0];
-			
-			for( var m in mClients) {
-
-			if( key == m )
-				mClients[m].fqn;
+		for( var m in mClients) {
+			console.log("-->" + m);
+			if( serverName == m ) {
+				thead += "" + mClients[m].fqn;
 			}
 		}
 		
 		thead += "</td><td>"
 		thead += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
 		thead += "</td><td>";
-		thead += data[k]["desc"];
+		thead += mGroups[k]["desc"];
 		thead += "</td>"
 		thead += "</tr>";
 		
@@ -244,27 +248,29 @@ function createGroupList( data )
 	
 	$("#group_list").empty();
 	$("#group_list").append(thead);
+	
+	createServerList();
 }
 
 function onClickProfile( name )
 {
-	var servers = mData[name].server;
-	var clients = mData[name].client;
+	var server = mGroups[name].server;
+	var clients = mGroups[name].client;
 	
 	var elemServer = '';
 	var elemClient = '';
-	
+	/*
 	for( var i = 0; i < servers.length; i++ ) {
 		
 		var key = servers[i];
 		
-		for( var k in mClients) {
+	for( var k in mClients) {
 
-			if( key == k )
-				elemServer += "<tr><td td width='100%'>" + mClients[k].fqn + '</td></tr>';
-		}
+		if( server == k )
+			elemServer += "<tr><td td width='100%'>" + mClients[k].fqn + '</td></tr>';
 	}
-	
+	}
+	*/
 	for( var j = 0; j < clients.length; j++ ) {
 		
 		var key = clients[j];
@@ -276,57 +282,99 @@ function onClickProfile( name )
 		}
 	}
 	
-	
-	$('#monitor_server_view').empty();
-	$('#monitor_server_view').append(elemServer);
-	
 	$('#monitor_client_view').empty();
 	$('#monitor_client_view').append(elemClient);
 }
 
-function createServerList( data )
+function onClickCheck( form ) 
 {
-	var server = "";
-	var client = "";
+	var v = form.value;
+	console.log( v );
+}
+
+function checkServerList(key)
+{
+	var result = false;
 	
-	for(var k in data)
-	{
-		var agent = data[k];
+	for(var group in mGroups) {
 		
-		var isUse = false;
-		for( var key in mData ) {
+		var serverKey = mGroups[group].server;
+		
+		if(serverKey == key)
+			result = true;
+		
+	}
+	
+	return result;
+}
+
+function createServerView()
+{
+	var elem = "";
+	
+	var isExisted = false;
+	for(var key in mClients)
+	{
+		var result = checkServerList(key);
+		
+		if(!result && mClients[key].mode == "server") {
+			elem += "<input type='radio' name='serverName' id='serverName' value='" + key +"'/>";
+			elem += mClients[key].fqn;
+			elem += "<br/>";
+		}
+		
+	}
+
+	$("#server_list").empty();
+	$("#server_list").append(elem);
+}
+
+function checkClientsList(key)
+{
+	var result = false;
+	
+	for(var group in mGroups) {
+		
+		var clientList = mGroups[group].client;
+		
+		for(var i = 0; i < clientList.length; i++) {
 			
-			var group = mData[ key ];
-			var servers = group.server;
-			var uid = false;
-			
-			if( servers.length > 0) {
-				
-				var uid = servers[0];
-			}
-			
-			if(uid) {
-				
-				if( uid != k) {
-					if(agent.mode=="server") {
-						server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
-						server += agent.fqn;
-						server += "<br/>";
-					} else {
-						client += "<input type='checkbox' name='clientName' id='clientName_" + k + "' value="+ k + "/>";
-						client += agent.fqn;
-						client += "<br/>";
-					}
-				}
-			}
+			if(clientList[i] == key)
+				result = true;
 		}
 	}
-	 
-	$("#server_list").empty();
-	$("#server_list").append(server);
 	
+	return result;
+}
+
+function createClientView()
+{
+	var client = "";
+	console.log(mClients);
+	console.log(mGroups);
+	
+	for(var key in mClients)
+	{
+		var result = checkClientsList( key );
+		console.log("result: " + result);
+		if(!result && mClients[key].mode == "client") {
+			client += "<input type='checkbox' name='clientName' id='clientName_" + key + "' value="+ key + "/>";
+			client += mClients[key].fqn;
+			client += "<br/>";
+		}
+	}
+
 	$("#client_list").empty();
 	$("#client_list").append(client);
+}
+
+function createServerList()
+{
+	createServerView();
+	createClientView();
+	$("#monitor_client_view").empty();
+	$("#group_name").val("");
+	$("#group_desc").val("");
 }
 
 

@@ -160,8 +160,7 @@ GROUP_PROFILE = {
 	name: 'auction',
 	desc: '',
 	activity: true,
-	server: [
-	],
+	server: false,
 	client: [
 	]
 }

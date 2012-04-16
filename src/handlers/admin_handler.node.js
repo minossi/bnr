@@ -96,8 +96,13 @@ fu.setHandler("/request_admin_group_list",function(req, res) {
 	g_manager.setGroupProfiles();
 	var list = g_manager.getGroupProfiles();
 	
-	if(list != null)
-		res.simpleJSON( 200, list );
+	var data = new Object;
+	
+	data.clients = fu.clients;
+	data.groups = list;
+	
+	if(data != null)
+		res.simpleJSON( 200, data );
 	else
 		res.simpleJSON( 400, { error: "!request_admin_group_list" } );
 });
@@ -265,8 +270,13 @@ fu.setHandler("/request_admin_new_group",function(req, res) {
 		req.on('end', function () {
 			var data = JSON.parse(body);
 
-			g_manager.once('evt_added_group', function(data) {
-				if(data != null)
+			g_manager.once('evt_added_group', function(list) {
+				var data = new Object;
+	
+				data.clients = fu.clients;
+				data.groups = list;
+				
+				if(list != null)
 					res.simpleJSON( 200, data );
 				else
 					res.simpleJSON( 400, { error: "!request_admin_new_group" } );

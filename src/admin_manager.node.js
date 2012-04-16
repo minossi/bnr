@@ -193,7 +193,9 @@ AdminManager.prototype.addReleaseProfile = function(profile) {
 };
 
 AdminManager.prototype.addGroupProfile = function(profile) {
-	this.groupProfiles[profile.name] = profile;
+	console.log("===");
+	console.log(this.groupProfiles);
+	this.groupProfiles[ profile.name ] = profile;
 	var pf = new Group( this.main, this.groupProfiles[profile.name] );
 	this.groupPool[profile.name] = pf;
 };
@@ -285,13 +287,14 @@ AdminManager.prototype.newGroupProfile = function(config) {
 	de.debug('config', config);
 			
 	var profile = GROUP_PROFILE;
-	profile.name = config.name;
 	
 	//	set config
 	profile.name = config.name;
 	profile.desc = config.desc;
-	profile.server = config.servers;
+	profile.server = config.server;
 	profile.client = config.clients;
+	
+	console.log(profile.client);
 	
 	this.addGroupProfile(profile);
 
