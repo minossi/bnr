@@ -322,7 +322,7 @@ function createProfileList(data) {
 
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >Test Build</button>";
+			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickTest(this" + "," + i + ") value='OFF' >Test Build</button>";
 
 		}		
 
@@ -330,7 +330,7 @@ function createProfileList(data) {
 		
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickAlarm(this" + "," + i + ") value='OFF' >Real Build</button>";
+			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickReal(this" + "," + i + ") value='OFF' >Real Build</button>";
 
 		}
 		
@@ -342,6 +342,19 @@ function createProfileList(data) {
 		profile_attr[i] = mProfilesData[k];
 		i++;
 	}
+}
+
+function onClickTest( aRepo, aBranch ) {
+	var isReal = false;
+	
+	$.get('/request_test_build',{buildType:isReal, repo:aRepo, branch:aBranch}, function(result) {
+		if(result)
+			console.log('build complete');
+	});
+}
+
+function onClickReal( repo, branch ) {
+	var isReal = true;
 }
 
 function createAppList(data, serial) {

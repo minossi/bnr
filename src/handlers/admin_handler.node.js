@@ -101,6 +101,37 @@ fu.setHandler("/request_admin_group_list",function(req, res) {
 		res.simpleJSON( 400, { error: "!request_admin_group_list" } );
 });
 
+fu.setHandler("/request_test_build",function(req, res) {
+	
+	
+	de.log('[request_test_build]');
+	var params = qs.parse(url.parse(req.url).query);
+		
+	//var buildGroup = GroupManager.getGroup('build');
+	//buildGroup.requestBuild(params);
+	
+	
+	//fu.clients
+	var socket=null;
+	for(var k in fu.sockets){
+		socket = fu.sockets[k];
+	}
+	
+	if(!socket) {
+		//var socket = fu.sockets[id];
+		socket.emit('build test', params, function (result) {		
+			if(result)
+				res.simpleJSON( 200, list );
+			else
+				res.simpleJSON( 400, { error: "!request_test_build" } );	
+		
+		});
+	}else{
+		res.simpleJSON( 400, { error: "!not available agent!" } );	
+	}
+		
+});
+
 fu.setHandler("/request_admin_app_list",function(req, res) {
 	
 	de.log('[request_admin_app_list]');

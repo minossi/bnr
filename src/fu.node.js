@@ -148,7 +148,7 @@ fu.staticHandler = function (filename) {
 };
 
 fu.clients = {};
-var sockets = {};
+fu.sockets = {};
 
 var io = sio.listen(fu.server);
 
@@ -169,7 +169,7 @@ io.sockets.on('connection', function (socket) {
 		console.log('checkin:', whoami);	
 
 		fu.clients[socket.id] = whoami;
-		sockets[socket.id] = socket;
+		fu.sockets[socket.id] = socket;
 		
 		fn(socket.id);
 	});
@@ -213,7 +213,7 @@ io.sockets.on('connection', function (socket) {
 						process.exit();
 					}
 					
-					var destSocket = sockets[socketId];
+					var destSocket = fu.sockets[socketId];
 					
 					if(destSocket){
 						console.log('dest file:' + file);
@@ -271,14 +271,14 @@ io.sockets.on('connection', function (socket) {
 		console.log('reconnect agent');
 				
 		fu.clients[socket.id] = socket;
-		sockets[socket.id] = socket;
+		fu.sockets[socket.id] = socket;
 	});
 
 	socket.on('disconnect', function() {
 		console.log('disconnect agent');
 				
 		delete fu.clients[socket.id];
-		delete sockets[socket.id];
+		delete fu.sockets[socket.id];
 	});
 });
 //	console.log('run agent service');

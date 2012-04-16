@@ -25,7 +25,7 @@ program
 	.option('-p, --port <port>', 'RnB Server Port')
 	.parse(process.argv)
 
-var port = program.port ? parseInt(program.port): 8080;
+var port = program.port ? parseInt(program.port): 8086;
 
 var ws = sio.listen(app);
 
