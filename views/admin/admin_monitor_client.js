@@ -30,8 +30,6 @@
 
 var mClients={};
 
-var mCurrentUID;
-
 var mData = null;
 
 $(document).ready(function () {
@@ -99,8 +97,7 @@ function onClickMake() {
 function onClickDelete() {
 	
 	var list = selectedGroup();
-	console.log("=========");
-	console.log(list);
+
 	$.ajax({
 		cache: false,
 		type: "POST",
@@ -201,88 +198,6 @@ function requestGroupList() {
 	});
 }
 
-function requestJobList() {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_job_list",
-		dataType: "json",
-		data: {
-			
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			console.log( data );
-			refreshJobProcess( data );
-			requestJobProcess();
-		}
-	});
-}
-
-function requestJobProcess() {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_job_process",
-		dataType: "json",
-		data: {
-			
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			console.log( data );
-				
-			refreshJobProcess( data );
-			requestJobProcess();
-		}
-	});
-}
-
-function requestStopAll() {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_stop_all",
-		dataType: "json",
-		data: {
-			
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			console.log( data );
-		}
-	});
-}
-
-function requestStop( index, serial ) {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_stop",
-		dataType: "json",
-		data: {
-			index: index,
-			serial: serial
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			console.log( data );
-		}
-	});
-}
-
 function createGroupList( data ) 
 {
 	var thead = "<table width='100%' border='1px'><thead>";
@@ -369,83 +284,6 @@ function onClickProfile( name )
 	$('#monitor_client_view').append(elemClient);
 }
 
-function refreshJobProcess( data )
-{	
-	var parent = $("#device_list").parent();
-	$("#device_list").remove();
-	parent.append("<div id='device_list' />");
-	
-	var btnElem = "<table border='0px' width='100%'>";
-	btnElem += "<tr>";
-	btnElem += "<td>그룹 이름</td>";
-	btnElem += "</tr>";
-	btnElem += "<tr><td>"
-	btnElem += "<input style='width:98%' type='text' name='event' maxlength='30' id='group_name' value=''/>";
-	btnElem += "</td></tr>"
-	btnElem += "<tr>";
-	btnElem += "<td>설명</td>";
-	btnElem += "</tr>";
-	btnElem += "<tr>"
-	btnElem += "<td>"
-	btnElem += "<textarea style='width:98%' rows='4' cols='30'/>";
-	btnElem += "</td>"
-	btnElem += "</tr>"
-	btnElem += "<tr>"
-	btnElem += "<td align='right'>"
-	btnElem += "<button style='width:100px' type='button' onclick='onClickAllStop()'>생성</button>";
-	btnElem += "</td>"
-	btnElem += "</tr>"
-	btnElem += "</table><hr>";
-	
-	$("#group_list").append(btnElem);
-
-	var elem = '<div style="height:680px;width:50%px;overflow:auto;">';
-	elem += "<table border='1px' width='100%'>";
-	elem += "<thead><tr>";
-	elem += "<th scope='col'></th>";
-	elem += "<th scope='col'>Name</th>";
-	elem += "<th scope='col'>IP Address</th>";
-	elem += "<th scope='col'>Desc</th>";
-	//elem += "<th scope='col' colspan='2'>Process</th>";
-	elem += "<tr></thead>";
-	
-	for(var key in data) {
-		var process = data[ key ];
-		
-		for(var i = 0; i < process.length; i++) {
-			
-			elem += '<tr>';
-			if( process[ i ].model == "" )
-				elem += '<td>' + "Unknown" + "</td>";
-			else
-				elem += '<td>' + process[ i ].model + "</td>";
-			
-			if( i == 0 )
-				elem += '<td>' + "<a href='#' onclick='onClickDevice("+ '"' + process[ i ].serial + '"' + ',' + '"' + process[ i ].uid + '"' + ")'>" + process[ i ].serial + "</a></td>";
-			else
-				elem += "<td>" + process[ i ].serial + "</td>";
-				
-			elem += '<td>' + process[ i ].profile + "</td>";
-			elem += '<td>' + process[ i ].app[ 0 ] + "</td>";
-
-
-			if( i  == 0) {
-				elem += '<td>' + ( process[ i ].monkeyIndex + 1 ) + '/' + process[ i ].monkeyCount + "</td>";
-				elem += "<td>" + "<a href='#' onclick='onClickStop("+ '"' + i +'"' + "," + '"' + process[ i ].serial +'"' + ")'>stop</a></td>";
-			} else {
-				elem += '<td>' + '0' + '/' + process[ i ].monkeyCount + "</td>";
-				elem += '<td>' + 'pending' + "</td>";
-			}
-			elem += '</tr>';
-		}
-	}
-
-	elem += '</table>';
-	elem += '</div>';
-
-	$("#device_list").append(elem);
-}
-
 function createServerList( data )
 {
 	var server = "";
@@ -455,14 +293,32 @@ function createServerList( data )
 	{
 		var agent = data[k];
 		
-		if(agent.mode=="server") {
-			server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
-			server += agent.fqn;
-			server += "<br/>";
-		} else {
-			client += "<input type='checkbox' name='clientName' id='clientName_" + k + "' value="+ k + "/>";
-			client += agent.fqn;
-			client += "<br/>";
+		var isUse = false;
+		for( var key in mData ) {
+			
+			var group = mData[ key ];
+			var servers = group.server;
+			var uid = false;
+			
+			if( servers.length > 0) {
+				
+				var uid = servers[0];
+			}
+			
+			if(uid) {
+				
+				if( uid != k) {
+					if(agent.mode=="server") {
+						server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
+						server += agent.fqn;
+						server += "<br/>";
+					} else {
+						client += "<input type='checkbox' name='clientName' id='clientName_" + k + "' value="+ k + "/>";
+						client += agent.fqn;
+						client += "<br/>";
+					}
+				}
+			}
 		}
 	}
 	 
@@ -473,27 +329,8 @@ function createServerList( data )
 	$("#client_list").append(client);
 }
 
-function onClickStop( index, serial )
-{
-	requestStop( index, serial );
-}
 
-function onClickAllStop()
-{
-	requestStopAll();
-}
 
-function onClickDevice( serial, uid )
-{
-	console.log( serial );
-	mCurrentUID = uid;
-	
-	createSystemGraph();
-	
-	for(var i = 0; i < GRAPH_EMITTER.length; i ++) {
-		requestMonitoringSystem( serial, GRAPH_EMITTER[ i ] );
-	}
-}
 
 
 

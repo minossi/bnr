@@ -42,8 +42,6 @@ var Profile 		= require('./stuff/profile.node');
 var Release			= require('./stuff/release.node');
 var Group			= require('./stuff/group.node');
 var fu   			= require('./fu.node');
-//var Device 			= require('./stuff/device.node');
-//var DeviceScheduler = require('./scheduler/device_scheduler.node');
 
 var TAG 			= 'AdminManager';
 
@@ -67,7 +65,7 @@ function AdminManager() {
 	
 	if(storage.isMakeStorage()) {
 		storage.makeStorage();
-        
+		
         this.clone();
 	}
 	
@@ -79,9 +77,8 @@ function AdminManager() {
 	
 	this.setGroupProfiles();
 	this.groupPool = this.setGroupProfilePool();
-	//this.addSchedulers();
+	
     console.log('AdminManager: ', fu.clients);
-    
 };
 
 AdminManager.prototype = new events.EventEmitter();
@@ -104,16 +101,6 @@ AdminManager.prototype.clone = function() {
     
         console.log( "clone: " + data );
     });
-    
-//    ngit.clone( PATH.WORK_REPO_GIT_ACT, GIT_REPO.ACT, function(err, data ) {
-//        
-//        console.log( "clone: " + data );
-//    });
-//    
-//    ngit.clone( PATH.WORK_REPO_GIT_ACT_BN, GIT_REPO.ACT_BN, function(err, data ) {
-//    
-//        console.log( "clone: " + data );
-//    });
 }
 
 
@@ -125,19 +112,12 @@ AdminManager.prototype.getGroupProfiles = function() {	return this.groupProfiles
 
 AdminManager.prototype.getProfile = function( profile ) {	return this.profilePool[ profile ]; }
 
-AdminManager.prototype.getActivityProfiles = function() { return this.activityProfiles; }
-
 AdminManager.prototype.getProfilePool = function() { return this.profilePool; }
-
-AdminManager.prototype.getDevicePool = function() { return this.devicePool; }
-
-AdminManager.prototype.getDevice = function( serial ) { return this.devicePool[ serial ]; }
 
 AdminManager.prototype.setProfiles = function() {
 	
 	var data = storage.loadMetaProfilesSync();
 	this.profiles = data;
-	//this.activityProfiles = this.setActivityProfiles();
 }
 
 AdminManager.prototype.setReleaseProfiles = function() {
@@ -165,7 +145,7 @@ AdminManager.prototype.setActivityProfiles = function() {
 }
 
 AdminManager.prototype.setProfilePool = function() {
-	//var list = this.activityProfiles;
+
 	var list = this.profiles;
 	var pool = new Object();
 	for(name in list) {
@@ -177,7 +157,7 @@ AdminManager.prototype.setProfilePool = function() {
 }
 
 AdminManager.prototype.setReleaseProfilePool = function() {
-	//var list = this.activityProfiles;
+	
 	var list = this.releaseProfiles;
 	var pool = new Object();
 	for(name in list) {
@@ -217,80 +197,6 @@ AdminManager.prototype.addGroupProfile = function(profile) {
 	var pf = new Group( this.main, this.groupProfiles[profile.name] );
 	this.groupPool[profile.name] = pf;
 };
-
-AdminManager.prototype.loadAllDevice = function(devices) {
-	var list = devices;
-	for(var i = 0; i < list.length; i++) {
-		var serial = list[i];
-		var d = new Device(this.main, serial);
-		this.devicePool[serial] = d;
-	}
-};
-
-AdminManager.prototype.loadDevice = function(devices) {
-	
-	for(var i = 0; i < devices.length; i++) {
-		
-		var serial = devices[i];
-		if( finder.isKeyInObject(serial, this.devicePool) ) {
-			var d = this.devicePool[serial];
-			//de.log(TAG, d.getProductModel());
-		} else {
-			var d = new Device(this.main, serial);
-			this.devicePool[serial] = d;
-		} 
-	}
-}
-
-AdminManager.prototype.clearDevicePool = function(devices) {
-	if(devices.length > 0) {
-		var list = finder.notExistedKeysInObject(devices, this.devicePool);
-		for(var i = 0; i < list.length; i++) {
-			var serial = list[i];
-			de.log(TAG, 'disconnect device');
-			delete this.devicePool[serial];
-		}
-	} else {
-		for(serial in this.devicePool) {
-			delete this.devicePool[serial];
-		}
-		de.log(TAG, 'all disconnect device');
-	}
-}
-
-AdminManager.prototype.addSchedulers = function() {
-	
-	var deviceScheduler = new DeviceScheduler( null, INTERVAL_DEVICE_LIST );
-	
-	var _this = this;
-	
-	deviceScheduler.on('event', function( event, args ) {
-		
-		switch(event) {
-			
-			case DeviceScheduler.EVENT.START:
-				de.log(TAG, 'add device scheduler');
-			break;
-			
-			case DeviceScheduler.EVENT.RELOAD_DEVICE_LIST:
-			
-				_this.clearDevicePool( args.devices );
-				
-				if( finder.isEmptyInObject(_this.devicePool) ) 
-					_this.loadAllDevice( args.devices );
-				else
-					_this.loadDevice( args.devices );
-				
-				_this.emit( 'event', event, args );
-			break;
-			
-			default:
-			break;
-		}
-	});
-
-	deviceScheduler.start();
-}
 
 AdminManager.prototype.newProfile = function(config) {
 	de.debug('config', config);
@@ -336,9 +242,6 @@ AdminManager.prototype.newProfile = function(config) {
     }
     
     var branch = config.branch;
-    
-    console.log("==========");
-    console.log(config.branch, config.tag);
     
     ngit.addRBranch( PATH.WORK_REPO_GIT_GMKT, branch,  function( err, data ) {
         
@@ -445,42 +348,6 @@ AdminManager.prototype.deleteGroupProfile = function(list) {
 	}
 	
 }
-
-AdminManager.prototype.editProfile = function(data) {
-	
-	var name = data.name;
-	//this.profiles[name] = name;
-
-	this.profiles[name].config.event = Number(data.config.event);
-	this.profiles[name].config.count = Number(data.config.count);
-	this.profiles[name].config.seed_start = Number(data.config.seed_start);
-	this.profiles[name].config.seed_end = Number(data.config.seed_end);
-	this.profiles[name].config.seed_interval = Number(data.config.seed_interval);
-	this.profiles[name].config.throttle = Number(data.config.throttle);
-	
-	this.profiles[name].schedule = data.schedule;
-	
-	if( storage.saveMetaProfilesSync(this.profiles) ) {
-		this.emit( 'evt_edited_profile', this.profiles );
-	} else {
-		this.emit( 'evt_edited_profile', null );
-	}
-}
-
-AdminManager.prototype.doRun = function( data, isSave ) {
-	de.log(TAG, data, isSave);
-	
-	for( key in data ) {
-		var profile = this.getProfile( key );
-		var devices = data[key].target;
-		
-		if(isSave)
-			profile.save( data[key] );
-			
-		profile.makeNowJobs( devices );
-	}
-}
-
 
 AdminManager.prototype.getSourceList = function( domain ) {
     
