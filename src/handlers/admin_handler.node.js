@@ -117,11 +117,11 @@ fu.setHandler("/request_test_build",function(req, res) {
 		socket = fu.sockets[k];
 	}
 	
-	if(!socket) {
+	if(socket) {
 		//var socket = fu.sockets[id];
 		socket.emit('build test', params, function (result) {		
 			if(result)
-				res.simpleJSON( 200, list );
+				res.simpleJSON( 200, result );
 			else
 				res.simpleJSON( 400, { error: "!request_test_build" } );	
 		
