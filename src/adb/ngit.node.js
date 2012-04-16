@@ -100,11 +100,11 @@ ngit.checkout = function( workspace, branch, callback ) {
     return cmd;
 };
 
-ngit.copy = function( dest, callback ) {
+ngit.copy = function( workspace, callback ) {
     
     var cmd;
     
-    cmd = spawn( "bash", [ PATH_BGIT, "cp" ] );
+    cmd = spawn( "bash", [ PATH_BGIT, "cp" , workspace] );
         
 	setLog( cmd );
 	
@@ -139,11 +139,11 @@ ngit.pull = function( callback ) {
     return cmd;
 };
 
-ngit.push = function( branch, callback ) {
+ngit.push = function( workspace, callback ) {
     
     var cmd;
     
-    cmd = spawn( "bash", [ PATH_BGIT, "ps", branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "ps", workspace] );
         
 	setLog( cmd );
 	

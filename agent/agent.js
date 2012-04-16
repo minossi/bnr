@@ -119,8 +119,10 @@ Client.prototype.realBuild = function ( job, fn) {
 	ngit.clone( PATH_BUILD, job.repo, function(err, data ) {
 	
 		if(err) throw err;
+		
+		/*
     // 2. checkout    
-		ngit.checkout ( PATH_BUILD, job.branch, function(err,data) {
+		ngit.checkout ( "./gmkt/st", job.branch, function(err,data) {
 			
 			if(err) throw err;
 
@@ -128,7 +130,7 @@ Client.prototype.realBuild = function ( job, fn) {
 			
 	// 3. msbuild
 			//var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
-			var cmd = spawn( "msbuild.exe", [PATH_BUILD, "/m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5"] );
+			var cmd = spawn( "msbuild.exe", ["./", "/m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5"] );
 			
 			setLog( cmd );
 			
@@ -139,11 +141,11 @@ Client.prototype.realBuild = function ( job, fn) {
 				console.log("exit code: "+ code);
 				
 	// 4. clone binary repo
-				ngit.clone( PATH_BIN, job.repo_bn, function(err, data ) {
+				ngit.clone( "../../", job.repo_bn, function(err, data ) {
 				
 					if(err) throw err;
 	// 5. copy st to rt
-					ngit.copy( PATH_BUILD, function(err, data ) {
+					ngit.copy( "./gmkt/st", function(err, data ) {
 
 						if(err) throw err;
 
@@ -151,7 +153,7 @@ Client.prototype.realBuild = function ( job, fn) {
 						console.log( "clone: " + data );
 
 	// 6. push to binary repo
-						ngit.push( PATH_BIN, function(err, data ) {
+						ngit.push( "../rt", function(err, data ) {
 							
 							if(err) throw err;
 
@@ -163,7 +165,7 @@ Client.prototype.realBuild = function ( job, fn) {
 					});
 				});
 			});
-		});
+		});*/
     });
 }
 
@@ -363,18 +365,20 @@ Server.prototype.realBuild = function ( job, fn) {
 		
 		if(err) throw "step 1:" + err;
     // 2. checkout    
-		ngit.checkout ( PATH_BUILD, job.branch, function(err,data) {
+		ngit.checkout ( "./st", job.branch, function(err,data) {
 			
 			if(err) throw  "step 2:" + err;
 
 			console.log( "clone: " + data );
 			
+			
+			
 	// 3. msbuild
 			var cmd;
-			var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
-			cmd = spawn( bs, [] );
+			var bs = "msbuild.exe " + "./gmkt/st/KRAdmin.sln" +" /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
+			cmd = spawn( "msbuild.exe", ["./gmkt/st/KRAdmin.sln"] );
 				
-
+			setLog(cmd);
 			
 			cmd.on('exit', function(code){ 
 			
@@ -382,20 +386,27 @@ Server.prototype.realBuild = function ( job, fn) {
 			
 				console.log("exit code: "+ code);
 				
+				
+				console.log(job.repo_bn);
 	// 4. clone binary repo
 				ngit.clone( PATH_BUILD, job.repo_bn, function(err, data ) {
 				
 					if(err) throw "step 4:" + err;
+					
+					
+					
 	// 5. copy st to rt
-					ngit.copy( PATH_BUILD, function(err, data ) {
+					ngit.copy( "./st", function(err, data ) {
 
 						if(err) throw "step 5:" +err;
 
 						console.log('build test' + job.repo);		
 						console.log( "clone: " + data );
-
+						
+					
+						
 	// 6. push to binary repo
-						ngit.push( PATH_BIN, function(err, data ) {
+						ngit.push( "./rt", function(err, data ) {
 							
 							if(err) throw "step 6:" +err;
 

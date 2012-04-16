@@ -14,12 +14,13 @@ echo "
       [rt]:         remotetag               - [rt]  [workspace] [tag] [branch]
       [drt]:        delete remote tag       - [drt] [workspace] [tag]
       [pl]:         pull                    - [pl]
-      [ps]:         push                    - [ps]  [branch]
+      [ps]:         push                    - [ps]  [workspace]
       [f]:          fetch                   - [f]
 --------------------------------------------------------------------------------
 "
-echo "[workspace]:" $1
-echo "[command]:" $2
+
+echo "[command]:" $1
+echo "[workspace]:" $2
 
 cmd_var=$1
 
@@ -43,7 +44,7 @@ if [ "$cmd_var" == "c" ]; then
     
     echo "Cloning"
 	
-	rm -rf gmkt/*
+	#rm -rf gmkt/*
 	
     git clone $remote_var
 
@@ -102,10 +103,9 @@ elif [ "$cmd_var" == "pl" ]; then
     git pull
 
 elif [ "$cmd_var" == "cp" ]; then
-
-	echo "Changing directory"
-	
-	cp -aR ./bin ../rt/
+	echo "0000000"
+	pwd
+	cp -aR ./BizLogic ../rt/
 	
 elif [ "$cmd_var" == "ps" ]; then
     
@@ -113,7 +113,7 @@ elif [ "$cmd_var" == "ps" ]; then
 	
 	git add .
 	git commit -a -m "binary version"
-    git push -u origin $p_branch
+    git push -u origin master
     
 
 elif [ "$cmd_var" == "f" ]; then

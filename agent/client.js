@@ -142,8 +142,8 @@ program
 	.description("build real")
 	.action(function( domain ){
 	
-		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
-		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
+		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin rt"
 		branch = "bc_3000_001";
 		
 		var socket = sio.connect(AGENT_URL);
