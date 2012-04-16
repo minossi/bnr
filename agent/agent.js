@@ -67,16 +67,16 @@ Client.prototype.checkin = function( aMode, aPort, aFqn, anUrl, cb){
 	
 } 
 
-Client.prototype.checkout = function( agentUrl, cb){
-		
-	var socket = this.rooms[agentUrl] || null;
-	if(socket){
-		socket.disconnect();
-		delete
-	}
-
-} 
-
+//Client.prototype.checkout = function( agentUrl, cb){
+//		
+//	var socket = this.rooms[agentUrl] || null;
+//	if(socket){
+//		socket.disconnect();
+//		delete 
+//	}
+//
+//} 
+//
 function Server( app ) { 
 
 	this.app = app;
