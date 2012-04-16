@@ -60,7 +60,7 @@ Client.prototype.checkin = function( aMode, aPort, aFqn, anUrl, cb){
 			cb(result);
 		
 		if(result)
-			console.log("checkin soket :\t%s", result);
+			console.log("checkin socket :\t%s", result);
 		else
 			console.log("checkin error");
 	});
@@ -232,13 +232,18 @@ program
 
 
 function displayInfo(program) {
+	console.log("===========================================");
 	console.log("FQN:       \t%s", program.FQN);
 	console.log("Parent Url:\t%s", program.url);
 	console.log("Role Mode: \t%s", program.mode);
 	console.log("Service Port:\t%s", program.port);
+	console.log("===========================================");
 }
 
+displayInfo(program);
+
 if(program.mode == 'client'){
+	
 	if(!program.url){
 		console.log("\n\n>>> 'client' mode must have URL (-u, -url <url>)\n\n");
 		console.log(program.optionHelp());
@@ -259,7 +264,6 @@ if(program.mode == 'client'){
 	}
 	
 	var server = new Server( fu.server );	
-	console.log('run agent service');
 	server.listen( program.port, null );
 }
 
