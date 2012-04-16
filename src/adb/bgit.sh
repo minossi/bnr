@@ -34,6 +34,7 @@ t_branch_var=$4
 
 
 echo "Changing to Desktop directory"
+echo $ws_var
 cd $ws_var
 pwd
 
@@ -41,6 +42,9 @@ pwd
 if [ "$cmd_var" == "c" ]; then
     
     echo "Cloning"
+	
+	rm -rf *
+	
     git clone $remote_var
 
 elif [ "$cmd_var" == "co" ]; then
@@ -97,9 +101,18 @@ elif [ "$cmd_var" == "pl" ]; then
     echo "Pulling"
     git pull
 
+elif [ "$cmd_var" == "cp" ]; then
+
+	echo "Changing directory"
+	
+	cp -aR ./bin ../rt/
+	
 elif [ "$cmd_var" == "ps" ]; then
     
     echo "Pushing"
+	
+	git add .
+	git commit -a -m "binary version"
     git push -u origin $p_branch
     
 

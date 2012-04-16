@@ -84,8 +84,8 @@ PATH = {
     WORK_REPO_GIT_ACT_BN: path.join( process.cwd(), NAME_STORAGE, "iac", "rt"),
     WORK_REPO_GIT_GMKT_LOG: path.join( process.cwd(), NAME_STORAGE, "gmkt", "rt", "log"),
     WORK_REPO_GIT_ACT_LOG: path.join( process.cwd(), NAME_STORAGE, "iac", "rt", "log"),
-    BGIT: path.join( process.cwd(), "src", "adb", "bgit.sh"),
-    MULTIGIT: path.join( process.cwd(), "src", "adb", "multimodule.sh")
+    BGIT: path.join( "../", "src", "adb", "bgit.sh"),
+    MULTIGIT: path.join( "../", "src", "adb", "multimodule.sh")
 };
 
 PROFILE_LIST = {

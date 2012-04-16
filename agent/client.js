@@ -33,7 +33,7 @@ program
 //})
 //var agent = "";
 
-var AGENT_URL = "http://localhost:8080";
+var AGENT_URL = "http://localhost:9999";
 
 program
 	.command('status')
@@ -135,6 +135,36 @@ program
 				process.exit();
 			});
 		});
+	});
+	
+program
+	.command('build <domain>')
+	.description("build real")
+	.action(function( domain ){
+	
+		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
+		branch = "bc_3000_001";
+		
+		var socket = sio.connect(AGENT_URL);
+		
+		var job = {repo:repo, repo_bn:repo_bn, branch:branch};
+		
+		socket.on('connect', function() {	
+			
+			console.log('connected...');
+			
+			socket.emit('build real',job,function(result){
+				
+				if(result)
+					console.log('build success');
+				else
+					console.log('build fail');
+					
+				process.exit();
+			});
+		});
+		
 	});
 	
 program

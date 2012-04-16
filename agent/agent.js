@@ -8,6 +8,20 @@ var cio = require('socket.io-client');
 var program = require('commander');
 var mkdirp = require('mkdirp');
 var fu = require('./fu.node');
+var ngit = require('../src/adb/ngit.node');
+var spawn     		= require('child_process').spawn;
+
+
+function objprop(obj){
+	for(var k in obj) {
+		console.log ( k );
+	}
+}
+PATH_BUILD = "./build/st"
+PATH_BIN = "./build/rt"
+
+//mkdirp(PATH_BUILD, 0755, function(err) {});
+//mkdirp(PATH_BIN, 0755, function(err) {});
 
 
 function Client ( url ){
@@ -26,21 +40,19 @@ function Client ( url ){
 		theClient.pullFile(path, fn);
 	});
 		
-	io.on('build stage', function (job, fn) {
-
-		console.log('build test');
-
-		fn(true);
-
-	});
-	
 	io.on('build test', function (job, fn) {
 
 		console.log('build test');
-		
+
 		fn(true);
+
 	});
 	
+	io.on('build real', function (job, fn) {
+		console.log('build real');
+		theClient.realBuild(job,fn);	
+	});
+		
 	return this;
 }
 
@@ -80,9 +92,77 @@ Client.prototype.pushFile =  function (file, body, fn) {
 	});
 }
 
-//Client.prototype.pullFile =  function (path, fn) {
-//	//tar.
-//}
+Client.prototype.realBuild = function ( job, fn) {
+	
+	console.log('real build');
+	
+	/*
+	checkin socket :        907528329521460064
+	build test ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st
+	buildType
+	repo
+	repo_bn
+	branch
+	group
+	*/
+	// 1. git source clone
+	
+	console.log( job.repo );
+	console.log( job.repo_bn );
+	console.log( job.branch );
+
+	ngit.clone( PATH_BUILD, job.repo, function(err, data ) {
+	
+		if(err) throw err;
+    // 2. checkout    
+		ngit.checkout ( PATH_BUILD, job.branch, function(err,data) {
+			
+			if(err) throw err;
+
+			console.log( "clone: " + data );
+			
+	// 3. msbuild
+			var cmd;
+			var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
+			cmd = spawn( bs, [] );
+				
+			cmd.stdout.on('data',function(data){ callback(null, data);});
+			cmd.stderr.on('data',function(data){ callback(null, data);});
+			
+			cmd.on('exit', function(code){ 
+			
+				if(!code) throw 'exit error :' + code ;
+			
+				console.log("exit code: "+ code);
+				
+	// 4. clone binary repo
+				ngit.clone( PATH_BUILD, job.repo_bn, function(err, data ) {
+				
+					if(err) throw err;
+	// 5. copy st to rt
+					ngit.copy( PATH_BUILD, function(err, data ) {
+
+						if(err) throw err;
+
+						console.log('build test' + job.repo);		
+						console.log( "clone: " + data );
+
+	// 6. push to binary repo
+						ngit.push( PATH_BIN, function(err, data ) {
+							
+							if(err) throw err;
+
+							console.log('build test' + job.repo);		
+							console.log( "clone: " + data );
+						
+							fn(true);
+						});
+					});
+				});
+			});
+		});
+    });
+}
 
 function Server( app ) { 
 
@@ -164,6 +244,11 @@ function Server( app ) {
 					fn({body:data});
 				}
 			});
+		});
+		
+		socket.on('build real', function (job, fn) {
+			console.log('build real');
+			theServer.realBuild(job,fn);
 		});
 		
 		socket.on('release', function(job, fn) {
@@ -252,6 +337,76 @@ Server.prototype.pushFile = function(agents, files, fn) {
 	});
 }
 
+Server.prototype.realBuild = function ( job, fn) {
+	
+	console.log('real build');
+	
+	/*
+	checkin socket :        907528329521460064
+	build test ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st
+	buildType
+	repo
+	repo_bn
+	branch
+	group
+	*/
+	// 1. git source clone
+	
+	console.log( job.repo );
+	console.log( job.repo_bn );
+	console.log( job.branch );
+
+	ngit.clone( PATH_BUILD, job.repo, function(err, data ) {
+		
+		if(err) throw "step 1:" + err;
+    // 2. checkout    
+		ngit.checkout ( PATH_BUILD, job.branch, function(err,data) {
+			
+			if(err) throw  "step 2:" + err;
+
+			console.log( "clone: " + data );
+			
+	// 3. msbuild
+			var cmd;
+			var bs = "msbuild.exe " + PATH_BUILD + " /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
+			cmd = spawn( bs, [] );
+				
+
+			
+			cmd.on('exit', function(code){ 
+			
+				if(!code) throw "step 3:" + code ;
+			
+				console.log("exit code: "+ code);
+				
+	// 4. clone binary repo
+				ngit.clone( PATH_BUILD, job.repo_bn, function(err, data ) {
+				
+					if(err) throw "step 4:" + err;
+	// 5. copy st to rt
+					ngit.copy( PATH_BUILD, function(err, data ) {
+
+						if(err) throw "step 5:" +err;
+
+						console.log('build test' + job.repo);		
+						console.log( "clone: " + data );
+
+	// 6. push to binary repo
+						ngit.push( PATH_BIN, function(err, data ) {
+							
+							if(err) throw "step 6:" +err;
+
+							console.log('build test' + job.repo);		
+							console.log( "clone: " + data );
+						
+							fn(true);
+						});
+					});
+				});
+			});
+		});
+    });
+}
 
 Server.prototype.release = function(agents, files, fn) {
 

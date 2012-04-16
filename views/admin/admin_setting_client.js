@@ -293,7 +293,7 @@ function createProfileList(data) {
 		pf += "</div>";
 		pf += "</td>";
 		pf += "</td><td width='15%'>";
-		pf += "<div id='seed_end" + i + "'>";
+		pf += "<div id='actus_" + i + "'>";
 		pf += mProfilesData[k]["config"]["type"];
 		pf += "</div>";
 		pf += "</td>";
@@ -326,7 +326,7 @@ function createProfileList(data) {
 		
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' onclick=onClickTest('" + dm + "') >Test Build</button>";
+			pf += "<button type='button' style='width:50px' onclick=onClickTest('" + i + "," + dm + "') >Test Build</button>";
 
 		}		
 
@@ -348,12 +348,15 @@ function createProfileList(data) {
 	}
 }
 
-function onClickTest( domain ) {
+function onClickTest( index, domain ) {
 	var isReal = false;
 	
 	var repo = "";
 	var repo_bn = "";
 	var branch = "";
+	var group =  $("#actus_" + index).text();
+	
+	console.log( "=>" + group );
 	
 	if(domain == "gmkt") {
 		
@@ -376,7 +379,8 @@ function onClickTest( domain ) {
 			buildType: isReal,
 			repo: repo,
 			repo_bn: repo_bn,
-			branch: branch
+			branch: branch,
+			group: group
 		},
 		error: function () {
 		},
@@ -392,6 +396,10 @@ function onClickReal( repo, branch ) {
 	var repo = "";
 	var repo_bn = "";
 	var branch = "";
+	var group =  $("#actus_" + index).text();
+	
+	console.log( "=>" + group );
+	
 	if(domain == "gmkt") {
 		
 		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
@@ -413,40 +421,15 @@ function onClickReal( repo, branch ) {
 			buildType: isReal,
 			repo: repo,
 			repo_bn: repo_bn,
-			branch: branch
+			branch: branch,
+			group: group
 		},
 		error: function () {
 		},
 		success: function (data) {	
-			
+			console.log(data);
 		}
 	});
-}
-
-function createAppList(data, serial) {
-
-	$("#application_list").empty();
-	$("#application_list").append("Loading...");
-		
-	var app = "";
-
-	for(i = 0; i < data.length; i++)
-	{
-		var k = data[i];		
-		app += "<input type='checkbox' onclick='onCheckedApp(this);' name='apkName' id='apkName_" + replaceAll(k,'.','-') + "' value="+ k + "/>";
-		app += k;
-		app += "<br/>";
-	}
-	 
-	$("#application_list").empty();
-	$("#application_list").append(app);
-	
-	var list = mProfilesData[selectedProfile]['target'][selectedDevice].app;
-
-	for(var i = 0; i < list.length; i++) {
-		var app =  replaceAll( list[i], '.', '-' );
-		$("input[id='apkName_" + app + "']").attr('checked', true);
-	}	  
 }
 
 function onClickEdit(index) {

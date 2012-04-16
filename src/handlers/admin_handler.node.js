@@ -113,16 +113,19 @@ fu.setHandler("/request_admin_build",function(req, res) {
 	de.log('[request_admin_build]');
 	var params = qs.parse(url.parse(req.url).query);
 		
-	//var buildGroup = GroupManager.getGroup('build');
-	//buildGroup.requestBuild(params);
+	var gname = params.group;
+	var list = g_manager.getGroupProfiles();
+	var uids = list[gname].client;
+	
+	var socket = fu.sockets[uids[0]];
 	
 	
-	//fu.clients
+	/*	
 	var socket=null;
 	for(var k in fu.sockets){
 		socket = fu.sockets[k];
 	}
-	
+	*/
 	if(socket) {
 		//var socket = fu.sockets[id];
 		socket.emit('build test', params, function (result) {		

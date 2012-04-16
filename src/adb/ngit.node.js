@@ -30,7 +30,7 @@
 
 
 
-
+require('../config.node');
 var spawn     		= require('child_process').spawn;
 var fs 				= require('fs');
 var path 			= require('path');
@@ -41,18 +41,24 @@ var TAG 			= 'NGit';
 
 var ngit 			= exports;
 
-
+var PATH_BGIT = "../src/adb/bgit.sh";
 
 /*
  *	NGit
  */
+
+function setLog( cmd ){
+    cmd.stdout.on('data',function(data){ console.log(data.toString());});
+    cmd.stderr.on('data',function(data){ console.log(data.toString());});
+}
+ 
 ngit.version = function( callback ) {
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["v"] );
+    cmd = spawn( "bash", [ PATH_BGIT , "v"] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
+	setLog( cmd );
+	
     cmd.on('exit', function(code){ callback('exit', null);});
     
     return cmd;
@@ -62,21 +68,34 @@ ngit.clone = function( workspace, repo, callback) {
 	
     var cmd;
     
-    cmd = spawn( PATH.BGIT, [ "c", workspace, repo ] );
-        
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
+    cmd = spawn( 'bash' , [ PATH_BGIT, "c", workspace, repo ] );
+      
+	setLog( cmd );
+
     cmd.on('exit', function(code){ 
-        
+        /*
         if( repo == GIT_REPO.GMKT_BN || repo == GIT_REPO.ACT_BN ) {
             if( !fio.isRealPathSync( PATH.WORK_REPO_GIT_GMKT_LOG ) ) {
         	    de.log(TAG, 'there is not existed storage folder');
 			    fio.mkdirSync( PATH.WORK_REPO_GIT_GMKT_LOG );
 		    }
         }
-        
-        callback('exit', null);
+        */
+        callback(code, null);
     });
+    
+    return cmd;
+};
+
+ngit.checkout = function( workspace, branch, callback ) {
+    
+    var cmd;
+    
+    cmd = spawn( "bash", [ PATH_BGIT, "co", workspace, branch] );
+        
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -85,11 +104,11 @@ ngit.fetch = function( callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["f"] );
+    cmd = spawn( "bash", [ PATH_BGIT, "f"] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -98,11 +117,11 @@ ngit.pull = function( callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["pl"] );
+    cmd = spawn( "bash", [ PATH_BGIT, "pl"] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -111,11 +130,11 @@ ngit.push = function( branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["ps", branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "ps", branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 
@@ -125,11 +144,11 @@ ngit.addBranch = function( workspace, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["b", workspace, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "b", workspace, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -138,11 +157,11 @@ ngit.addRBranch = function( workspace, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["rb", workspace, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "rb", workspace, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -151,11 +170,11 @@ ngit.deleteBranch = function( workspace, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["db", workspace, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "db", workspace, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -164,11 +183,11 @@ ngit.deleteRBranch = function( workspace, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["drb", workspace, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "drb", workspace, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd ); 
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -177,11 +196,11 @@ ngit.addTag = function( workspace, tag, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["t", workspace, tag, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "t", workspace, tag, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd ); 
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -190,11 +209,11 @@ ngit.addRTag = function( workspace, tag, branch, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["rt", workspace, tag, branch] );
+    cmd = spawn( "bash", [ PATH_BGIT, "rt", workspace, tag, branch] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -203,11 +222,11 @@ ngit.deleteTag = function( workspace, tag, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["drt", workspace, tag] );
+    cmd = spawn( "bash", [ PATH_BGIT, "drt", workspace, tag] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -216,11 +235,11 @@ ngit.deleteRTag = function( workspace, tag, callback ) {
     
     var cmd;
     
-    cmd = spawn( PATH.BGIT, ["drt", workspace, tag] );
+    cmd = spawn( "bash", [ PATH_BGIT, "drt", workspace, tag] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+	
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 };
@@ -240,9 +259,8 @@ ngit.m_version = function( callback ) {
     
     cmd = spawn( PATH.MGIT, ["v"] );
         
-    cmd.stdout.on('data',function(data){ callback(null, data);});
-    cmd.stderr.on('data',function(data){ callback(null, data);});
-    cmd.on('exit', function(code){ callback('exit', null);});
+	setLog( cmd );
+    cmd.on('exit', function(code){ callback(code, null);});
     
     return cmd;
 }
