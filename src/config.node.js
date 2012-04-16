@@ -153,14 +153,6 @@ GROUP_PROFILE_LIST = {
     version: VERSION_PROFILE_LIST,
 	description: 'ACTS meta profiles infomation using json syntax',
 	profiles: {
-		auction: {
-			name: 'auction',
-			desc: '',
-			activity: true,
-			server: [
-				"172.30.136.243"
-			]
-		}
 	}
 };
 
@@ -169,7 +161,8 @@ GROUP_PROFILE = {
 	desc: '',
 	activity: true,
 	server: [
-		"172.30.136.243"
+	],
+	client: [
 	]
 }
 

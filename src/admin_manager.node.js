@@ -189,7 +189,7 @@ AdminManager.prototype.setReleaseProfilePool = function() {
 }
 
 AdminManager.prototype.setGroupProfilePool = function() {
-	//var list = this.activityProfiles;
+
 	var list = this.groupProfiles;
 	var pool = new Object();
 	for(name in list) {
@@ -302,11 +302,11 @@ AdminManager.prototype.newProfile = function(config) {
 	profile.config.ersNo = config.ersNo;
 	profile.config.branch = config.branch;
 	profile.config.tag = config.tag;
-	profile.config.type = "DR";
-	profile.config.requester = "kim tae hi";
+	profile.config.type = config.group;
+	profile.config.requester = "ebay";
 	profile.config.requestDate = new Date();
-	profile.config.builder = "lee min jung";
-	profile.config.buildDate = "-";
+	profile.config.builder = "actus";
+	profile.config.buildDate = new Date();
 	profile.config.status = "-";
 	
 	//	set schedule
@@ -356,10 +356,10 @@ AdminManager.prototype.newReleaseProfile = function(config) {
 	profile.config.ersNo = config.ersNo;
 	profile.config.branch = config.branch;
 	profile.config.tag = config.tag;
-	profile.config.type = "DR";
-	profile.config.requester = "kim tae hi";
+	profile.config.type = config.group;
+	profile.config.requester = "ebay";
 	profile.config.requestDate = new Date();
-	profile.config.status = "wait";
+	profile.config.status = "-";
 	profile.config.desc = config.desc;
 	
 	//	set schedule
@@ -380,13 +380,15 @@ AdminManager.prototype.newReleaseProfile = function(config) {
 
 AdminManager.prototype.newGroupProfile = function(config) {
 	de.debug('config', config);
+			
 	var profile = GROUP_PROFILE;
 	profile.name = config.name;
 	
 	//	set config
 	profile.name = config.name;
 	profile.desc = config.desc;
-	profile.server = config.list;
+	profile.server = config.servers;
+	profile.client = config.clients;
 	
 	this.addGroupProfile(profile);
 
@@ -417,11 +419,31 @@ AdminManager.prototype.deleteReleaseProfile = function(list) {
 		delete this.releaseProfiles[ list[i] ];
 	}
 	
-	if( storage.saveMetaReleaseProfileSync(this.releaseProfiles) ) {
+	if( storage.saveMetaReleaseProfilesSync(this.releaseProfiles) ) {
 		this.emit( 'evt_deleted_release_profile', this.releaseProfiles );
 	} else {
 		this.emit( 'evt_deleted_release_profile', null );
 	}
+}
+
+AdminManager.prototype.deleteGroupProfile = function(list) {
+	
+	//console.log("$$: " + list.length);
+	
+	for(var i = 0; i < list.length; i++) {
+		console.log( list [i]);
+		console.log(this.groupProfiles);
+		delete this.groupProfiles[ list[i] ];
+	}
+	console.log("-----");
+	console.log( this.groupProfiles );
+	
+	if( storage.saveMetaGruopProfilesSync(this.groupProfiles) ) {
+		this.emit( 'evt_deleted_group_profile', this.groupProfiles );
+	} else {
+		this.emit( 'evt_deleted_group_profile', null );
+	}
+	
 }
 
 AdminManager.prototype.editProfile = function(data) {

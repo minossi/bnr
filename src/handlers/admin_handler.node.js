@@ -101,10 +101,10 @@ fu.setHandler("/request_admin_group_list",function(req, res) {
 		res.simpleJSON( 400, { error: "!request_admin_group_list" } );
 });
 
-fu.setHandler("/request_test_build",function(req, res) {
+fu.setHandler("/request_admin_build",function(req, res) {
 	
 	
-	de.log('[request_test_build]');
+	de.log('[request_admin_build]');
 	var params = qs.parse(url.parse(req.url).query);
 		
 	//var buildGroup = GroupManager.getGroup('build');
@@ -123,7 +123,7 @@ fu.setHandler("/request_test_build",function(req, res) {
 			if(result)
 				res.simpleJSON( 200, result );
 			else
-				res.simpleJSON( 400, { error: "!request_test_build" } );	
+				res.simpleJSON( 400, { error: "!request_admin_build" } );	
 		
 		});
 	}else{
@@ -263,8 +263,7 @@ fu.setHandler("/request_admin_new_group",function(req, res) {
 		
 		req.on('end', function () {
 			var data = JSON.parse(body);
-			
-			console.log("==>" + data);
+
 			g_manager.once('evt_added_group', function(data) {
 				if(data != null)
 					res.simpleJSON( 200, data );
@@ -332,6 +331,35 @@ fu.setHandler("/request_admin_delete_release_profile",function(req, res) {
 			});
 
 			g_manager.deleteReleaseProfile( data );
+		});
+	} else if( req.method == 'GET' ){
+		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	
+	}	
+});
+
+fu.setHandler("/request_admin_delete_group",function(req, res) {
+	
+	de.log('[request_admin_delete_group]');
+	//var params = qs.parse(url.parse(req.url).query);
+	
+	if(req.method == 'POST'){
+		var body = '';
+		
+		req.on('data', function (data) {
+			body += data;
+		});
+		
+		req.on('end', function () {
+			var d = JSON.parse(body);
+
+			g_manager.once('evt_deleted_group_profile', function(result) {
+				if(result != null)
+					res.simpleJSON( 200, result );
+				else
+					res.simpleJSON( 400, { error: "!request_admin_delete_group" } );
+			});
+
+			g_manager.deleteGroupProfile( d.list );
 		});
 	} else if( req.method == 'GET' ){
 		res.simpleJSON( 400, { error: "!Must call this servie using POST method" } );	

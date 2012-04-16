@@ -169,7 +169,7 @@ Storage.saveMetaProfilesSync = function( profiles ) {
 	return false;
 };
 
-Storage.saveMetaReleasesProfilesSync = function( profiles ) {
+Storage.saveMetaReleaseProfilesSync = function( profiles ) {
 	var data = new Object();
 	data.version = VERSION_PROFILE_LIST;
 	data.description = DESCRIPTION_PROFILE_LIST;
@@ -182,7 +182,7 @@ Storage.saveMetaReleasesProfilesSync = function( profiles ) {
 	return false;
 };
 
-Storage.saveMetaGruopsProfilesSync = function( profiles ) {
+Storage.saveMetaGruopProfilesSync = function( profiles ) {
 	var data = new Object();
 	data.version = VERSION_PROFILE_LIST;
 	data.description = DESCRIPTION_PROFILE_LIST;
@@ -225,7 +225,7 @@ Storage.saveMetaReleaseProfileSync = function( profile ) {
 	if(profiles) {
 		profiles[ profile.name ] = profile;
 		console.log(profiles);
-		if( Storage.saveMetaReleasesProfilesSync(profiles) )
+		if( Storage.saveMetaReleaseProfilesSync(profiles) )
 			return true;
 		
 		return false;
@@ -237,12 +237,10 @@ Storage.saveMetaReleaseProfileSync = function( profile ) {
 
 Storage.saveMetaGroupProfileSync = function( profile ) {
 	var profiles = Storage.loadMetaGroupsSync();
-
-	
 	if(profiles) {
 		profiles[ profile.name ] = profile;
 		console.log(profiles);
-		if( Storage.saveMetaGruopsProfilesSync(profiles) )
+		if( Storage.saveMetaGruopProfilesSync(profiles) )
 			return true;
 		
 		return false;
