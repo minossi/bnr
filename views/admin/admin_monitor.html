@@ -34,7 +34,7 @@
        <table border="1px" width="100%">
        <thead>
 	        <tr>
-	            <th scope='col'> Server </th>
+	            <th scope='col'> Agent List</th>
 				<!-- <th scope='col'> Test Process </th> -->
 				<th scope='col'> Group List </th>
 				<th scope='col'> Property </th>
@@ -43,26 +43,50 @@
         </thead>
         <tr>
 			<td valign="top" width="250px">
-				<div id='server_list'></div>
+				<table width="100%" border="1px">
+					<thead>
+						<tr>
+							<th scope='col'> Server</th>
+							<th scope='col'> Client </th>
+						</tr>
+
+					</thead>
+					<tr>
+						<td width="50%">
+							<div id='server_list'></div>
+						</td>
+						<td width="50%">
+							<div id='client_list'></div>
+						</td>
+					</tr>
+				</table>
 			</td>
 			
 			<td valign="top" width="250px">
 				<div id='group_top'></div>
-				<div style="overflow:auto;">
-					<table>
-						<div id='group_list'></div>
-					</table>
-				</div>
+				<div id='group_list' style="overflow:auto;  height:150px"></div>
 			</td>
-			<!-- <td width="150px">
-				<div id='process_list'></div>
-		    </td> -->
+	
 			<td valign="top" width="30%">
-				<!-- <button type='button' onclick="onClickLog('Logcat')">Logcat</button>
-												<button type='button' onclick="onClickLog('Monkey')">Monkey</button>
-								<button type='button' onclick='onClickSystem()'>System</button>
-								<hr> -->
-				<div id='monitor_view'></div>
+				<table width="100%" border="1px">
+					<thead>
+						<tr>
+							<!--<th scope='col'> Server</th>-->
+							<th scope='col'> Client </th>
+						</tr>
+
+					</thead>
+					<tr>
+						<!--
+						<td width="50%">
+							<div id='monitor_server_view'></div>
+						</td>
+						-->
+						<td width="100%">
+							<div id='monitor_client_view'></div>
+						</td>
+					</tr>
+				</table>
 		    </td>
         </tr>
         

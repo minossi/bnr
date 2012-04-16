@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -28,35 +28,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-
-
-var GRAPH_NAME = ['chart1','chart2','chart3'];
-var GRAPH_COLOR = [['#330099'],['#FF9933'],['#33CC00', '#FF0000']];
-var GRAPH_DATA = ['cpu','memory','network'];
-var GRAPH_URL = [ "/request_admin_monitoring_cpu",
-				"/request_admin_monitoring_memory",
-				"/request_admin_monitoring_network" ];
-				
-var GRAPH_EMITTER = [ 'system_cpu', 'system_memory', 'system_network' ];
-
 var mClients={};
 
-var mSystemData = {
-	'cpu': [ [] ],
-	'memory': [ [] ],
-	'network':[ [], [] ]
-}
-
 var mCurrentUID;
-
 
 var mData = null;
 
 $(document).ready(function () {
 	
-	
-	//var btnElem = "<button type='button' onclick='onClickAllStop()'>All Stop</button><hr>";
 	var btnElem = "<table border='0px' width='100%'>";
 	btnElem += "<tr>";
 	btnElem += "<td>그룹 이름</td>";
@@ -75,6 +54,7 @@ $(document).ready(function () {
 	btnElem += "<tr>"
 	btnElem += "<td align='right'>"
 	btnElem += "<button style='width:100px' type='button' onclick='onClickMake()'>생성</button>";
+	btnElem += "<button style='width:100px' type='button' onclick='onClickDelete()'>Delete</button>";
 	btnElem += "</td>"
 	btnElem += "</tr>"
 	btnElem += "</table><hr>";
@@ -82,13 +62,14 @@ $(document).ready(function () {
 	$("#group_top").empty();
 	$("#group_top").append(btnElem);
 	
-	
 	requestServerList();
 	requestGroupList();
 });
 
 function onClickMake() {
+	
 	var list = selectedServer();
+	var list2 = selectedClient();
 	
 	var name = $("#group_name").val();
 	var desc = $("#group_desc").val();
@@ -99,8 +80,9 @@ function onClickMake() {
 		url: "/request_admin_new_group",
 		dataType: "json",
 		data: JSON.stringify({
-			list: list,
-			name: name,
+			servers: list,
+			clients: list2,
+			name:name,
 			desc: desc
 		}),
 		error: function () {
@@ -108,6 +90,29 @@ function onClickMake() {
 		},
 		success: function (data) {
 			console.log(data);
+			mData = data;
+			createGroupList( data );
+		}
+	});
+}
+
+function onClickDelete() {
+	
+	var list = selectedGroup();
+	console.log("=========");
+	console.log(list);
+	$.ajax({
+		cache: false,
+		type: "POST",
+		url: "/request_admin_delete_group",
+		dataType: "json",
+		data: JSON.stringify({
+			list:list
+		}),
+		error: function () {
+
+		},
+		success: function (data) {
 			mData = data;
 			createGroupList( data );
 		}
@@ -133,6 +138,28 @@ function selectedServer() {
 	return list;
 }
 
+function selectedClient() {
+
+	 var list = new Array();
+
+	 $("input[name='clientName']:checkbox:checked").each(function(){
+													list.push(replaceAll($(this).val(), '/', ''));
+													});	
+
+	return list;
+}
+function selectedGroup() {
+
+	 var list = new Array();
+
+	 $("input[name='groupName']:checkbox:checked").each(function(){
+													list.push(replaceAll($(this).val(), '/', ''));
+													});	
+
+	return list;
+}
+
+
 function requestServerList() {
 	
 	 $.ajax({
@@ -147,12 +174,7 @@ function requestServerList() {
 
 		},
 		success: function ( data ) {
-			console.log( data );
-			//refreshJobProcess( data );
-			//requestJobProcess();
-			
 			mClients = data;
-			
 			createServerList( mClients );
 		}
 	});
@@ -173,8 +195,6 @@ function requestGroupList() {
 		},
 		success: function ( data ) {
 			console.log( data );
-			//refreshJobProcess( data );
-			//requestJobProcess();
 			mData = data;
 			createGroupList( data );
 		}
@@ -263,109 +283,90 @@ function requestStop( index, serial ) {
 	});
 }
 
-function requestMonitoringSystem( serial, emitter ) {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: '/request_admin_monitoring_system',
-		dataType: "json",
-		data: {
-			serial: serial,
-			emitter: emitter
-		},
-		error: function (data) {
-			alert(data);
-		},
-		success: function ( data ) {
-			//console.log( '===>', data );
-			if( data ) {
-				//console.log('=====>', data.msg);
-				if(data.msg == 'cpu') {
-					mSystemData.cpu[0].push( data.info );
-					var infos = mSystemData.cpu;
-					refreshSystemGraph( 0, infos );
-				}
-				
-				if(data.msg == 'memory') {
-					mSystemData.memory[0].push( data.info );
-					var infos = mSystemData.memory;
-					refreshSystemGraph( 1, infos );
-				}
-				
-				
-				if(data.msg == 'network') {
-					mSystemData.network[0].push( data.info.rb );
-					mSystemData.network[1].push( data.info.tb );
-					var infos = mSystemData.network;
-					refreshSystemGraph( 2, infos );
-				}
-				
-				if( data.msg == 'end')
-					clearSystemGraph();	
-			}
-			
-			requestMonitoringSystem( serial, emitter );
-		}
-	});
-}
-
 function createGroupList( data ) 
 {
-	$("#group_list").empty();
-
-	var thead = "<thead>";
+	var thead = "<table width='100%' border='1px'><thead>";
 	thead += "<tr>"; 
 	thead += "<th scope='col'>No.</th>";
+	thead += "<th scope='col'>Server</th>";
 	thead += "<th scope='col'>Name</th>";
 	thead += "<th scope='col'>설명</th>";
 	thead += "</tr>";
 	thead += "</thead>";
-	$("#group_list").append(thead);
-	
+
 	var i = 0; 
-	var pf = "";
+	
 	for(var k in data){
-		//console.log(k);	
-		pf = "<tr><td width='30%'>";
-		pf += i;
-		pf += "</td><td width='15%'>";
-		//TODO
-		pf += "<div id='evt" + i + "'>";
-		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + data[k]["name"] + "</a>";
-		pf += "</div>";
-		pf += "</td><td width='15%'>";
-		pf += "<div id='evt" + i + "'>";
-		pf += data[k]["desc"];
-		pf += "</div>";
-		pf += "</td>"
-		pf += "</tr>";
-		i++;
 		
-		$("#group_list").append(pf);
+		var group = data[k];
+		var servers = group.server;
+		thead += "<tr><td width='10%'>";
+		thead += "<input type='checkbox' name='groupName' id='groupName_" + k + "' value="+ k + "/>";
+		thead += "</td><td>";
+		
+		if(servers.length > 0) {
+			
+			var key = servers[0];
+			
+			for( var m in mClients) {
+
+			if( key == m )
+				mClients[m].fqn;
+			}
+		}
+		
+		thead += "</td><td>"
+		thead += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
+		thead += "</td><td>";
+		thead += data[k]["desc"];
+		thead += "</td>"
+		thead += "</tr>";
+		
+		i++;
 	}
 	
+	thead += "</table>"
 	
+	$("#group_list").empty();
+	$("#group_list").append(thead);
 }
 
 function onClickProfile( name )
 {
-	console.log(name);
-	console.log(mData);
-	var data = mData[name];
+	var servers = mData[name].server;
+	var clients = mData[name].client;
 	
-	var elem = '<table>';
+	var elemServer = '';
+	var elemClient = '';
 	
-//	for( var i = 0; i< data['server'].length; i++ ) {
-	for( var k in mClients) {
+	for( var i = 0; i < servers.length; i++ ) {
 		
-		elem += '<tr><td>' + mClients[k].fqn + '</td></tr>';
+		var key = servers[i];
+		
+		for( var k in mClients) {
+
+			if( key == k )
+				elemServer += "<tr><td td width='100%'>" + mClients[k].fqn + '</td></tr>';
+		}
 	}
 	
-	elem += '</table>';
-	console.log(elem);
-	$('#monitor_view').empty();
-	$('#monitor_view').append(elem);
+	for( var j = 0; j < clients.length; j++ ) {
+		
+		var key = clients[j];
+		
+		for( var k in mClients) {
+
+			if( key == k )
+				elemClient += "<tr><td width='100%'>" + mClients[k].fqn + '</td></tr>';
+		}
+	}
+	
+	
+	$('#monitor_server_view').empty();
+	$('#monitor_server_view').append(elemServer);
+	
+	$('#monitor_client_view').empty();
+	$('#monitor_client_view').append(elemClient);
 }
 
 function refreshJobProcess( data )
@@ -374,7 +375,6 @@ function refreshJobProcess( data )
 	$("#device_list").remove();
 	parent.append("<div id='device_list' />");
 	
-	//var btnElem = "<button type='button' onclick='onClickAllStop()'>All Stop</button><hr>";
 	var btnElem = "<table border='0px' width='100%'>";
 	btnElem += "<tr>";
 	btnElem += "<td>그룹 이름</td>";
@@ -446,124 +446,31 @@ function refreshJobProcess( data )
 	$("#device_list").append(elem);
 }
 
-function refreshSystemGraph( category, data ) {
-	/*Object
-	cpu: Array[1]
-	0: Array[2]
-	0: 7
-	1: 88
-	length: 2
-	__proto__: Array[0]
-	length: 1
-	__proto__: Array[0]
-	memory: Array[1]
-	0: Array[1]
-	0: 65
-	length: 1
-	__proto__: Array[0]
-	length: 1
-	__proto__: Array[0]
-	network: Array[2]
-	0: Array[1]
-	0: 0
-	length: 1
-	__proto__: Array[0]
-	1: Array[1]
-	0: 0
-	length: 1
-	__proto__: Array[0]
-	length: 2
-	__proto__: Array[0]
-	__proto__: Object
-	*/
-	
-	//if( ((data[0].length) % 5 == 1) || ((data[0][0].length) % 5 == 1))
-	//{
-		var seriesConfig = [];
-		var axesConfig = {};
-		
-		for(var i = 0; i < GRAPH_COLOR[category].length; i++) {
-			var config = new Object();
-			config.color = GRAPH_COLOR[category][i];
-			config.lineWidth = 1;
-		
-			var marker = new Object();
-			marker.show = false;
-			marker.size = 1;
-			marker.style = 'dimaond';
-			config.markerOptions = marker;
-		
-			seriesConfig.push(config);
-		}
-	
-		var x = new Object();
-		x.show = false;
-		x.min = 0;
-		x.pad = 0;
-	
-		var tick = new Object();
-		tick.showLabel = false;
-		x.tickOptions = tick;
-	
-		var y = new Object();
-		y.show = false;
-		y.min = 0;
-	
-		if(category != 2) {
-			y.max = 100;
-		}
-	
-		axesConfig.xaxis = x;
-		axesConfig.yaxis = y;
-
-		$('#' + GRAPH_NAME[category]).empty();
-		
-		// jqplot plugin
-		$.jqplot(GRAPH_NAME[category], data, 
-		{ 
-			series:seriesConfig,
-			axes: axesConfig
-		});
-	//}
-}
-
-function clearSystemGraph() {
-	
-	$('#' + GRAPH_NAME['cpu']).empty();
-	$('#' + GRAPH_NAME['memory']).empty();
-	$('#' + GRAPH_NAME['network']).empty();
-	
-	mSystemData.cpu = [[]];
-	mSystemData.memory = [[]];
-	mSystemData.network = [[],[]];
-	
-	//onClickDevice( serial );
-}
-
 function createServerList( data )
 {
 	var server = "";
-
-//	for(var i = 0; i < data['builder'].length; i++)
+	var client = "";
+	
 	for(var k in data)
 	{
-		var client = data[k];		
-		server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
-		server += client.fqn;
-		server += "<br/>";
+		var agent = data[k];
+		
+		if(agent.mode=="server") {
+			server += "<input type='checkbox' name='serverName' id='serverName_" + k + "' value="+ k + "/>";
+			server += agent.fqn;
+			server += "<br/>";
+		} else {
+			client += "<input type='checkbox' name='clientName' id='clientName_" + k + "' value="+ k + "/>";
+			client += agent.fqn;
+			client += "<br/>";
+		}
 	}
 	 
 	$("#server_list").empty();
 	$("#server_list").append(server);
-}
-
-function createSystemGraph()
-{	  
-	$("#monitor_view").empty();
-	var elem = 'CPU(%)<br/><br/><div id="chart1" style="height:200px;"></div><br/>';
-	elem += 'Memory(%)<br/><br/><div id="chart2" style="height:200px;"></div><br/>';
-	elem += 'Network(byte)<br/><br/><div id="chart3" style="height:200px;"></div>';
-	$("#monitor_view").append(elem);
+	
+	$("#client_list").empty();
+	$("#client_list").append(client);
 }
 
 function onClickStop( index, serial )

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2011-2012 Actus Ltd. and its suppliers.
  * All rights reserved. 
  *
@@ -241,18 +241,19 @@ function createProfileList(data) {
 	$("#profile_list").empty();
 
 	var thead = "<thead>";
-	thead += "<tr>"; 
+	thead += "<tr>";
+	thead += "<th scope='col'></th>";
 	thead += "<th scope='col'>SeqNo.</th>";
 	thead += "<th scope='col'>Domain</th>";
 	thead += "<th scope='col'>ERS No.</th>";
 	thead += "<th scope='col'>Git Branch</th>";
 	thead += "<th scope='col'>Git Tag</th>";
-	thead += "<th scope='col'>Type</th>";
+	thead += "<th scope='col'>Group</th>";
 	thead += "<th scope='col'>요청자</th>";
 	thead += "<th scope='col'>요청일</th>";
 	thead += "<th scope='col'>빌드자</th>";
 	thead += "<th scope='col'>빌드상태</th>";
-	thead += "<th scope='col'>빌드날짜</th>";
+	//thead += "<th scope='col'>빌드날짜</th>";
 	thead += "<th scope='col'>테스트 빌드</th>";
 	thead += "<th scope='col'>리얼 빌드</th>";
 	thead += "</tr>";
@@ -262,16 +263,15 @@ function createProfileList(data) {
 	var i = 0; 
 	
 	for(var k in data){
-		//console.log(k);	
-		var pf = "<tr><td width='30%'>";
-		//if(i==0)
-		//	pf += "<input type='checkbox' checked name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-		//else
-		//pf += "<input type='checkbox' name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-		//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
-		//pf += k;
-		//pf += "<a href ='#' onclick=requestDeviceList();>" + k + "</a>";
-		//pf += mProfilesData[k]["config"]["seqNo"];
+		
+
+
+		var pf = "<tr><td width='5%'>";
+
+		pf += "<input type='checkbox' name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
+
+		pf += "</td><td width='15%'>";
+		
 		pf += i;
 		pf += "</td><td width='15%'>";
 		//TODO
@@ -311,18 +311,22 @@ function createProfileList(data) {
 		pf += mProfilesData[k]["config"]["builder"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
-		pf += "<div id='throttle" + i + "'>";
-		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + mProfilesData[k]["config"]["status"] + "</a>";
+		pf += "<div id='status" + i + "'>";
+		//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + mProfilesData[k]["config"]["status"] + "</a>";
+		pf += mProfilesData[k]["config"]["status"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
+		/*
 		pf += "<div id='throttle" + i + "'>";
 		pf += mProfilesData[k]["config"]["buildDate"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
-
+		*/
+		var dm = mProfilesData[k]["config"]["domain"];
+		
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickTest(this" + "," + i + ") value='OFF' >Test Build</button>";
+			pf += "<button type='button' style='width:50px' onclick=onClickTest('" + dm + "') >Test Build</button>";
 
 		}		
 
@@ -330,7 +334,7 @@ function createProfileList(data) {
 		
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' name='button_activity' id = 'button_activity_" + i + "' onclick=onClickReal(this" + "," + i + ") value='OFF' >Real Build</button>";
+			pf += "<button type='button' style='width:50px' onclick=onClickReal('" + dm + "') >Real Build</button>";
 
 		}
 		
@@ -344,17 +348,79 @@ function createProfileList(data) {
 	}
 }
 
-function onClickTest( aRepo, aBranch ) {
+function onClickTest( domain ) {
 	var isReal = false;
 	
-	$.get('/request_test_build',{buildType:isReal, repo:aRepo, branch:aBranch}, function(result) {
-		if(result)
-			console.log('build complete');
+	var repo = "";
+	var repo_bn = "";
+	var branch = "";
+	
+	if(domain == "gmkt") {
+		
+		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
+		branch = "bc_3000_001";
+	} else {
+		repo = "ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/auct/rt/ItemPage3 iac/st"
+		branch = "bc_3001_001"
+	}
+	
+	
+	$.ajax({
+		cache: false,
+		type: "GET",
+		url: "/request_admin_build",
+		dataType: "json",
+		data: {
+			buildType: isReal,
+			repo: repo,
+			repo_bn: repo_bn,
+			branch: branch
+		},
+		error: function () {
+		},
+		success: function (data) {	
+			console.log(data);
+		}
 	});
 }
 
 function onClickReal( repo, branch ) {
 	var isReal = true;
+	
+	var repo = "";
+	var repo_bn = "";
+	var branch = "";
+	if(domain == "gmkt") {
+		
+		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
+		branch = "bc_3000_001";
+	} else {
+		repo = "ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st";
+		repo_bn = "ssh://bku@192.168.72.51:29419/auct/rt/ItemPage3 iac/st"
+		branch = "bc_3001_001"
+	}
+	
+	
+	$.ajax({
+		cache: false,
+		type: "GET",
+		url: "/request_admin_build",
+		dataType: "json",
+		data: {
+			buildType: isReal,
+			repo: repo,
+			repo_bn: repo_bn,
+			branch: branch
+		},
+		error: function () {
+		},
+		success: function (data) {	
+			
+		}
+	});
 }
 
 function createAppList(data, serial) {

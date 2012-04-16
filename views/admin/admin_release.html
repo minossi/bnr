@@ -12,12 +12,9 @@
 		
 	var edit_modes =null;
 	var arg = null;
-	
-    
-    
-	
+
 	function onLoad() {
-		
+		requestGroupList();
 	}
 	
 	function createSourceList( data ) {
@@ -50,232 +47,60 @@
 		$("#binary_list").empty();
 		$("#binary_list").append(binary);
 		
-		/*
-		var list = mProfilesData[selectedProfile]['target'][selectedDevice].app;
-
-		for(var i = 0; i < list.length; i++) {
-			var app =  replaceAll( list[i], '.', '-' );
-			$("input[id='apkName_" + app + "']").attr('checked', true);
-		}
-		*/
-	}
-	
-	function onLoadEditProfiles(val){			
-			
-		if (typeof window.dialogArguments == "object"){	
-			
-			var f = document.form;
-			
-			arg = window.dialogArguments;
-			//console.log("arg:", arg);
-			
-			edit_modes = arg.edit_mode;
-			console.log("edit", edit_modes );				
-			
-			f.fname.value = arg.name;
-			f.fname.disabled  = true;
-			f.event.value = arg.event;
-			f.count.value = arg.count;
-			f.interval.value = arg.seed_interval;
-			f.throttle.value = arg.throttle;
-			f.hour.value = arg.hours;
-			f.min.value = arg.mins;
-			f.day.value = arg.days;
-
-			for (var i=0; i<f.week.length; i++){
-				for (var j=0; j<arg.weeks.length; j++ ){
-					//console.log("=====", f.week[i].value);
-					//console.log("====", arg.weeks[j]);
-					if(f.week[i].value == arg.weeks[j]){
-						f.week[i].checked = true;
-					}
-				}
-			}
-			
-			f.month.value = arg.months;
-				
-		}else{
-			edit_modes = false;
-			console.log("not edit", edit_modes);
-		}
 	}
 	
 	function trimString( str ) {
 
 	    return str.replace(/^\s*/, "").replace(/\s*$/, "");
 	}
-	
-	// String.prototype.trim = function () {
-	// 	
-	//     return this.replace(/^\s*/, "").replace(/\s*$/, "");
-	// }
-	
+
 	function onClickSubmit(){
 
-        
-			
-			var name = new Date();
-			var domain = $("#hour").val();
-			var ersNo = $("#min").val();
-			
-			var branch = $("#repo").val();
-			var tag = $("#tag").val();
-			var desc = $('#desc').val();
-			
-            //var schedule = $("#schedule").val();
-            var event = $("#event").val();
-            var count = $("#count").val();
-            var start_seed = 0; //$("#start_seed").val();
-            var end_seed = ( ($("#count").val() - 1 ) * $("#interval").val());//$("#end_seed").val();
-            var interval = $("#interval").val();
-            var throttle = $("#throttle").val();
-			var hours = $("#hour").val();
-			var mins = $("#min").val();
-			
-			var arrWeek = [];
-			$("input[name='week']:checkbox:checked").each(function(){
-															arrWeek.push($(this).val());
-															});
-			var weeks = arrWeek.join(',');
-			var days = $("#day").val();
-			var months = $("#month").val();
-			/*
-			if (!frmchk_char(name, 0)) {
-            	alert("The first letter of the profile name is alphabet. And Alphabet, Numbers and '_' can be input");
-            	$("#fname").focus();
-            	return;
-            }          
-            if (!frmchk_char(event, 2)) {
-            	alert("event count: Numbers can be input");
-                $("#event").focus();
-                return;
-            }
-            if (!frmchk_char(count, 2)) {   
-                $("#count").focus();
-                return;
-            }
-            if (!frmchk_char(start_seed, 2)) {
-                alert("start seed: Numbers can be input");
-                $("#start_seed").focus();
-                return;
-            }
-            if (!frmchk_char(end_seed, 2)) {
-                alert("end seed: Numbers can be input");
-                $("#end_seed").focus();
-                return;
-            }
-            if (!frmchk_char(interval, 2)) {
-                alert("interval: Numbers can be input");
-                $("#interval").focus();
-                return;
-            }
-            if (!frmchk_char(throttle, 2)) {
-                alert("throttle: Numbers can be input");
-                $("#throttle").focus();
-                return;
-            }
-			if ($("#event").val()==0 || $("#count").val()==0 || $("#interval").val()==0 )
-			{
-				alert(" 0 or negative number is not available ");
-				return;
+		var name = new Date();
+		var domain = $("#hour").val();
+		var ersNo = $("#min").val();
+		
+		var branch = $("#repo").val();
+		var tag = $("#tag").val();
+		var desc = $('#desc').val();
+		var group = $("#select_build_gruop option:selected").val();
+		
+		var event = $("#event").val();
+		var count = $("#count").val();
+		var start_seed = 0; //$("#start_seed").val();
+		var end_seed = ( ($("#count").val() - 1 ) * $("#interval").val());//$("#end_seed").val();
+		var interval = $("#interval").val();
+		var throttle = $("#throttle").val();
+		var hours = $("#hour").val();
+		var mins = $("#min").val();
+		
+		var arrWeek = [];
+		$("input[name='week']:checkbox:checked").each(function(){
+														arrWeek.push($(this).val());
+														});
+		var weeks = arrWeek.join(',');
+		var days = $("#day").val();
+		var months = $("#month").val();
+		
+
+	
+
+		$.ajax({
+			cache: false,
+			type: "POST",
+			url: "/request_admin_new_release",
+			dataType: "json",
+			data: JSON.stringify({ group:group, name:name, desc:desc, domain:domain, ersNo:ersNo, branch:branch, tag:tag, mins:"", hours:"", weeks:"", days:"", months:"" }),
+			error: function () {
+
+			},
+			success: function (data) {
+				mProfilesData = data;
+				createNew();
+
 			}
-			*/
-
-		if (edit_modes==true)
-		{
-			console.log("edit", edit_modes);
-
-			//edit_mode = false;
-			//edit_index = -1;
-			//alert("세이브");
-			var profile = new Object();
-			profile = mProfilesData[arg.name];
-
-			profile.name=arg.name;
-			profile.config.event= event;
-			profile.config.count= count;
-			profile.config.seed_start= 0; //$('#textSeedStart'+index).val();
-			profile.config.seed_end= end_seed	 //$('profile'+index).val();
-			profile.config.seed_interval= interval;
-			profile.config.throttle= throttle;
-			
-			var l_hours = hours.replace(/\s+/g, '');
-			var l_mins = mins.replace(/\s+/g, '');
-			var l_days = days.replace(/\s+/g, '');
-			var l_weeks = weeks.replace(/\s+/g, '');
-			var l_months = months.replace(/\s+/g, '');
-			
-			var arrMins = [];
-			var arrHours = [];
-			var arrDays = [];
-			var arrWeeks = [];
-			var arrMonths = [];
-			
-			if(l_hours != '')
-				arrHours= l_hours.split(',');
-			if(l_mins != '')
-				arrMins= l_mins.split(',');
-			if(l_days != '')
-				arrDays= l_days.split(',');
-			if(l_weeks != '')
-				arrWeeks= l_weeks.split(',');
-			if(l_months != '')
-				arrMonths= l_months.split(',');
-			
-			profile.schedule.hours = arrHours;
-			profile.schedule.mins = arrMins;
-			profile.schedule.days = arrDays;
-			profile.schedule.weeks = arrWeeks;
-			profile.schedule.months = arrMonths;
-			
-			$.ajax({
-				cache: false,
-				type: "POST",
-				url: "/request_admin_edit_profile",
-				dataType: "json",
-				data: JSON.stringify(profile)
-				,
-				error: function () {
-
-				},
-				success: function (data) {
-					mProfilesData = data;				
-					createProfileList(data);
-				}
-			});
-
-			window.opener.location.reload();
-			window.close();
-
-		}else{
-			/*
-			for(var k in mProfilesData){
-				if (k == name) {
-            		alert("profile name is existed.");
-                    $("#fname").focus();
-                    return;
-            	}
-            }*/
-
-			$.ajax({
-				cache: false,
-				type: "POST",
-				url: "/request_admin_new_release",
-				dataType: "json",
-				data: JSON.stringify({name:name, desc:desc, domain:domain, ersNo:ersNo, branch:branch, tag:tag, mins:"", hours:"", weeks:"", days:"", months:"" }),
-				error: function () {
-
-				},
-				success: function (data) {
-					//console.log("++: " + data);
-					mProfilesData = data;
-					//console.log(mProfilesData)
-					createNew();
-                    
-                    
-				}
-			});          
-		}
+		});          
+		
 	}
 	
 	function createNew(){
@@ -303,14 +128,7 @@
 	for(var k in mProfilesData){
 		//console.log(k);	
 		var pf = "<tr><td width='30%'>";
-		//if(i==0)
-		//	pf += "<input type='checkbox' checked name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-		//else
-		//pf += "<input type='checkbox' name='profileName' id = 'profileName" + i + "' value='"+ k + "'/>";
-		//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
-		//pf += k;
-		//pf += "<a href ='#' onclick=requestDeviceList();>" + k + "</a>";
-		//pf += mProfilesData[k]["config"]["seqNo"];
+
 		pf += i;
 		pf += "</td><td width='15%'>";
 		//TODO
@@ -485,6 +303,41 @@
 			f.month.value += f.select_month.value + ",";
 		}
 	 }
+	 function requestGroupList() {
+	 	
+	 	$.ajax({
+				cache: false,
+				type: "GET",
+				url: "/request_admin_group_list",
+				dataType: "json",
+				data: {},
+				error: function () {
+
+				},
+				success: function (data) {
+					//mProfilesData = data;
+					console.log(data)
+					createGroupList(data);
+				}
+			});
+	 }
+	 
+	 function createGroupList(data) {
+	 	
+	 	console.log(data);
+	 	
+	 	var elem = "<select name='select_build_gruop' id='select_build_gruop' onchange='selectedBuildGroup(this.options[this.selectedIndex].value)'>";
+	 	for(var k in data) {
+	 		elem += "<option value='" + k + "'>" + k + "</option>";
+	 	}
+		
+		console.log(elem);
+	 	elem += "</select>"
+					
+		$("#group_list").empty();
+		$("#group_list").append(elem);
+	 }
+	 
 	 </script>
 
 </head>
@@ -524,6 +377,15 @@
 					<option value="3000">3000</option>
 					<option value="3001">3001</option>
 				</select>	
+            </td>
+        </tr>
+		
+		<tr>
+            <td>
+				Build group.
+			</td>
+            <td>
+				<div id="group_list"></div>	
             </td>
         </tr>
 		

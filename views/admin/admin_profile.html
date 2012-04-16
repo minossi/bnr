@@ -66,24 +66,15 @@
 	// }
 	
 	function onClickSubmit(){
-		
-		    //var name = $("#fname").val().toLowerCase();
-			
-			
-			
+
 			var name = new Date();
 			var domain = $("#hour").val();
 			var ersNo = $("#min").val();
 			
 			var branch = $("#branch").val();
 			var tag = $("#tag").val();
-			
-			
-			
-			
-			
-			
-            //var schedule = $("#schedule").val();
+			var group = $("#select_build_gruop option:selected").val();
+
             var event = $("#event").val();
             var count = $("#count").val();
             var start_seed = 0; //$("#start_seed").val();
@@ -100,130 +91,13 @@
 			var weeks = arrWeek.join(',');
 			var days = $("#day").val();
 			var months = $("#month").val();
-			/*
-			if (!frmchk_char(name, 0)) {
-            	alert("The first letter of the profile name is alphabet. And Alphabet, Numbers and '_' can be input");
-            	$("#fname").focus();
-            	return;
-            }          
-            if (!frmchk_char(event, 2)) {
-            	alert("event count: Numbers can be input");
-                $("#event").focus();
-                return;
-            }
-            if (!frmchk_char(count, 2)) {   
-                $("#count").focus();
-                return;
-            }
-            if (!frmchk_char(start_seed, 2)) {
-                alert("start seed: Numbers can be input");
-                $("#start_seed").focus();
-                return;
-            }
-            if (!frmchk_char(end_seed, 2)) {
-                alert("end seed: Numbers can be input");
-                $("#end_seed").focus();
-                return;
-            }
-            if (!frmchk_char(interval, 2)) {
-                alert("interval: Numbers can be input");
-                $("#interval").focus();
-                return;
-            }
-            if (!frmchk_char(throttle, 2)) {
-                alert("throttle: Numbers can be input");
-                $("#throttle").focus();
-                return;
-            }
-			if ($("#event").val()==0 || $("#count").val()==0 || $("#interval").val()==0 )
-			{
-				alert(" 0 or negative number is not available ");
-				return;
-			}
-			*/
 
-		if (edit_modes==true)
-		{
-			console.log("edit", edit_modes);
-
-			//edit_mode = false;
-			//edit_index = -1;
-			//alert("세이브");
-			var profile = new Object();
-			profile = mProfilesData[arg.name];
-
-			profile.name=arg.name;
-			profile.config.event= event;
-			profile.config.count= count;
-			profile.config.seed_start= 0; //$('#textSeedStart'+index).val();
-			profile.config.seed_end= end_seed	 //$('profile'+index).val();
-			profile.config.seed_interval= interval;
-			profile.config.throttle= throttle;
-			
-			var l_hours = hours.replace(/\s+/g, '');
-			var l_mins = mins.replace(/\s+/g, '');
-			var l_days = days.replace(/\s+/g, '');
-			var l_weeks = weeks.replace(/\s+/g, '');
-			var l_months = months.replace(/\s+/g, '');
-			
-			var arrMins = [];
-			var arrHours = [];
-			var arrDays = [];
-			var arrWeeks = [];
-			var arrMonths = [];
-			
-			if(l_hours != '')
-				arrHours= l_hours.split(',');
-			if(l_mins != '')
-				arrMins= l_mins.split(',');
-			if(l_days != '')
-				arrDays= l_days.split(',');
-			if(l_weeks != '')
-				arrWeeks= l_weeks.split(',');
-			if(l_months != '')
-				arrMonths= l_months.split(',');
-			
-			profile.schedule.hours = arrHours;
-			profile.schedule.mins = arrMins;
-			profile.schedule.days = arrDays;
-			profile.schedule.weeks = arrWeeks;
-			profile.schedule.months = arrMonths;
-			
-			$.ajax({
-				cache: false,
-				type: "POST",
-				url: "/request_admin_edit_profile",
-				dataType: "json",
-				data: JSON.stringify(profile)
-				,
-				error: function () {
-
-				},
-				success: function (data) {
-					mProfilesData = data;				
-					createProfileList(data);
-				}
-			});
-
-			window.opener.location.reload();
-			window.close();
-
-		}else{
-			/*
-			for(var k in mProfilesData){
-				if (k == name) {
-            		alert("profile name is existed.");
-                    $("#fname").focus();
-                    return;
-            	}
-            }*/
-            
 			$.ajax({
 				cache: false,
 				type: "POST",
 				url: "/request_admin_new_profile",
 				dataType: "json",
-				data: JSON.stringify({name:name, domain:domain, ersNo:ersNo, branch:branch, tag:tag, mins:"", hours:"", weeks:"", days:"", months:"" }),
+				data: JSON.stringify({ group:group, name:name, domain:domain, ersNo:ersNo, branch:branch, tag:tag, mins:"", hours:"", weeks:"", days:"", months:"" }),
 				error: function () {
 
 				},
@@ -233,8 +107,6 @@
 					createNew();
 				}
 			});
-            
-		}
 	}
 	
 	function createNew(){
@@ -480,7 +352,7 @@
             </td>
         </tr>
 	
-			<tr>
+		<tr>
             <td>
 				Build group.
 			</td>
@@ -523,23 +395,7 @@
 				<input type="text" name="tag" maxlength="20" id="tag" value="0"/>
             </td>
         </tr>	
-		<!--
-		<tr>
-			<td>
-				Week
-			</td>
-            <td>				
-				<input type="checkbox" name="week" id="week" value="0" >월</input>
-				<input type="checkbox" name="week" id="week" value="1" >화</input>
-				<input type="checkbox" name="week" id="week" value="2" >수</input>
-				<input type="checkbox" name="week" id="week" value="3" >목</input>
-				<input type="checkbox" name="week" id="week" value="4" >금</input>
-				<input type="checkbox" name="week" id="week" value="5" >토</input>
-				<input type="checkbox" name="week" id="week" value="6" >일</input>
-            </td>	
-			    
-        </tr>
-		-->
+
 
         <tr align="center">
             <td colspan="2">

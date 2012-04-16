@@ -282,7 +282,8 @@ function createProfileList(data) {
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 		pf += "<div id='throttle" + i + "'>";
-		pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + data[k]["config"]["status"] + "</a>";
+		//pf += "<a href='#' onclick=onClickProfile('"+ k +"');>" + data[k]["config"]["status"] + "</a>";
+		pf += data[k]["config"]["status"];
 		pf += "</div>";
 		pf += "</td><td width='15%'>";
 
