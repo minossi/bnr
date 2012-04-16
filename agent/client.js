@@ -32,29 +32,30 @@ program
 //	});
 //})
 //var agent = "";
+
+var AGENT_URL = "http://localhost:8080";
+
 program
-	.command('clients <agent-url>')
+	.command('status')
 	.description("connected angent list")
-	.action(function(url){
+	.action(function(){
 		console.log("list command...");
 		
-		var agent = sio.connect(url);
+		var agent = sio.connect(AGENT_URL);
 		agent.emit('clients','',function(result){
 			console.log(result);
 			process.exit();
 		}); 	
 	});
 
-
-
 program
-	.command('push <agent-url> <file>')
+	.command('push <file>')
 	.description("connected angent list")
-	.action(function(url, filePath){
+	.action(function(filePath){
 		
-		console.log("push: %s, %s", url, filePath);
+		console.log("push: %s",filePath);
 		
-		var socket = sio.connect(url);
+		var socket = sio.connect(AGENT_URL);
 		
 		socket.on('connect', function() {	
 
@@ -73,23 +74,19 @@ program
 	});
 	
 program
-	.command('pushagent <agent-url> <agent-id,agent-id>')
+	.command('pushagent <agent-id,agent-id>, <file,file>')
 	.description("connected angent list")
-	.action(function(url, agentString){
+	.action(function(agentList, fileList){
 	
-		var agentIds = agentString.split(',');
-		job = {agents:agentIds
+		var agents = agentList.split(',');
+		var files = fileList.split(',');
+		job = {agents:agents
 				,dest: 'push-test'
-				,files:['client.js', 'index.html', 'xxx.png']};
-				
-		//data = {agents:[],dest:'push-test',files:[]};
-		
-		//data.agents = JSON.parse('['+agents+']');
-		//data.files =  JSON.parse('['+files+']');
+				,files:files};
 	
 		console.log("push: %s", job);
 		
-		var socket = sio.connect(url);
+		var socket = sio.connect(AGENT_URL);
 		
 		socket.on('connect', function() {	
 			
@@ -99,13 +96,33 @@ program
 			});
 		});
 	});
+
+program
+	.command('broadcast <file,file>')
+	.description("connected angent list")
+	.action(function(fileList){
+
+		var files = fileList.split(',');
+	
+		console.log("push: %s", files);
+		
+		var socket = sio.connect(AGENT_URL);
+		
+		socket.on('connect', function() {	
+			
+			socket.emit('push to all agents', files, function(result){
+				console.log('send file complete');
+				process.exit();
+			});
+		});
+	});
 		
 program
-	.command('dir <agent-url> <path>')
+	.command('dir <path>')
 	.description("list of directory which name is <path>")
-	.action(function(url, filePath){
+	.action(function(filePath){
 		
-		var socket = sio.connect(url);
+		var socket = sio.connect(AGENT_URL);
 		
 		socket.on('connect', function() {	
 			
@@ -121,11 +138,11 @@ program
 	});
 	
 program
-	.command('pull <agent-url> <ifile> <ofile>')
+	.command('pull <request-file> <local-file-name>')
 	.description("pull file from server file name is <in-file>, out file is <out-file>")
-	.action(function(url, ifile, ofile){
+	.action(function(ifile, ofile){
 				
-		var socket = sio.connect(url);
+		var socket = sio.connect(AGENT_URL);
 		
 		socket.on('connect', function() {	
 			
