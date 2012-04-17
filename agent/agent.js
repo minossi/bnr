@@ -365,7 +365,7 @@ Server.prototype.realBuild = function ( job, fn) {
 		
 		if(err) throw "step 1:" + err;
     // 2. checkout    
-		ngit.checkout ( "./st", job.branch, function(err,data) {
+		ngit.checkout ( "./gmkt/st", job.branch, function(err,data) {
 			
 			if(err) throw  "step 2:" + err;
 
@@ -374,9 +374,15 @@ Server.prototype.realBuild = function ( job, fn) {
 			
 			
 	// 3. msbuild
+			/*
 			var cmd;
 			var bs = "msbuild.exe " + "./gmkt/st/KRAdmin.sln" +" /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
 			cmd = spawn( "msbuild.exe", ["./gmkt/st/KRAdmin.sln"] );
+			*/
+			
+			var cmd;
+			var path = "msbuild.exe " + "./gmkt/st/KRAdmin.sln" +" /m /nr:true /v:minimal /t:Rebuild /p:Configuration=Release;TargetFrameworkVersion=v3.5";
+			cmd = spawn( "bash", [ path ] );
 				
 			setLog(cmd);
 			
@@ -389,14 +395,14 @@ Server.prototype.realBuild = function ( job, fn) {
 				
 				console.log(job.repo_bn);
 	// 4. clone binary repo
-				ngit.clone( PATH_BUILD, job.repo_bn, function(err, data ) {
+				ngit.clone( PATH_BIN, job.repo_bn, function(err, data ) {
 				
 					if(err) throw "step 4:" + err;
 					
 					
 					
 	// 5. copy st to rt
-					ngit.copy( "./st", function(err, data ) {
+					ngit.copy( "./gmkt/st", function(err, data ) {
 
 						if(err) throw "step 5:" +err;
 
@@ -406,7 +412,7 @@ Server.prototype.realBuild = function ( job, fn) {
 					
 						
 	// 6. push to binary repo
-						ngit.push( "./rt", function(err, data ) {
+						ngit.push( "./gmkt/rt", function(err, data ) {
 							
 							if(err) throw "step 6:" +err;
 
@@ -437,6 +443,7 @@ program
 	.option('-p, --port <port>', 'BnR Agent Port [8080]', Number, 8080)
 	.option('-F, --FQN <FQN>',   'BnR Agent Fully Qualified Name', String, 'build-server')
 	.option('-m, --mode <mode>', 'BnR Agent Mode [server | client]', String, 'server')
+	.option('-i, --ip <addr>', 'BnR Agent Address ', String, 'localhost')
 	.parse(process.argv);
 
 
@@ -446,6 +453,7 @@ function displayInfo(program) {
 	console.log("Parent Url:\t%s", program.url);
 	console.log("Role Mode: \t%s", program.mode);
 	console.log("Service Port:\t%s", program.port);
+	console.log("Service ip:\t%s", program.ip);
 	console.log("===========================================");
 }
 
@@ -468,12 +476,12 @@ if(program.mode == 'client'){
 	if(program.url) {
 		
 		var client = new Client(program.url);
-		client.checkin(program.mode, program.port, program.FQN, program.url);
-	
+		var selfURL = "http://" + program.ip + ":"+ program.port;
+		client.checkin(program.mode, program.port, program.FQN, selfURL);
 	}
 	
 	var server = new Server( fu.server );	
-	server.listen( program.port, null );
+	server.listen( program.port, program.ip );
 }
 
 

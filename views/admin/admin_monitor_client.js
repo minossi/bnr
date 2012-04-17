@@ -28,9 +28,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var mClients = {};
+var mClients 	= {};
 
-var mGroups = {};
+var mGroups 	= {};
 
 $(document).ready(function () {
 	
@@ -60,44 +60,52 @@ $(document).ready(function () {
 	$("#group_top").empty();
 	$("#group_top").append(btnElem);
 	
-	//requestServerList();
 	requestGroupList();
 });
 
-function onClickMake() {
+function requestGroupList() {
 	
-	var sn = $('input[name=serverName]:checked').val();
-
-	var tsn = "";
-	if(sn) 
-		tsn = replaceAll( sn , "/", "");
-	console.log( "1: " + sn );
-	var list = selectedClient();
-	
-	var name = $("#group_name").val();
-	var desc = $("#group_desc").val();
-	
-	$.ajax({
+	 $.ajax({
 		cache: false,
-		type: "POST",
-		url: "/request_admin_new_group",
+		type: "GET",
+		url: "/request_admin_group_list",
 		dataType: "json",
-		data: JSON.stringify({
-			server: tsn,
-			clients: list,
-			name:name,
-			desc: desc
-		}),
+		data: {
+			
+		},
 		error: function () {
 
 		},
-		success: function (data) {
-			console.log(data);
-			mGroups = data.groups;
+		success: function ( data ) {
+			console.log( data );
 			mClients = data.clients;
+			mGroups = data.groups;
 			createGroupList();
 		}
 	});
+}
+
+function onClickProfile( name )
+{
+	var server = mGroups[name].server;
+	var clients = mGroups[name].client;
+	
+	var elemServer = '';
+	var elemClient = '';
+
+	for( var j = 0; j < clients.length; j++ ) {
+		
+		var key = clients[j];
+		
+		for( var k in mClients) {
+
+			if( key == k )
+				elemClient += "<tr><td width='100%'>" + mClients[k].fqn + '</td></tr>';
+		}
+	}
+	
+	$('#monitor_client_view').empty();
+	$('#monitor_client_view').append(elemClient);
 }
 
 function onClickDelete() {
@@ -121,6 +129,177 @@ function onClickDelete() {
 		}
 	});
 }
+
+function onClickMake() {
+	
+	var sn = $('input[name=serverName]:checked').val();
+
+	var tsn = "";
+	if(sn) 
+		tsn = replaceAll( sn , "/", "");
+		
+	console.log( "1: " + sn );
+	var list = selectedClient();
+	
+	var name = $("#group_name").val();
+	var desc = $("#group_desc").val();
+	
+	$.ajax({
+		cache: false,
+		type: "POST",
+		url: "/request_admin_new_group",
+		dataType: "json",
+		data: JSON.stringify({
+			server: sn,
+			clients: list,
+			name: name,
+			desc: desc
+		}),
+		error: function () {
+
+		},
+		success: function (data) {
+			console.log(data);
+			mGroups = data.groups;
+			mClients = data.clients;
+			createGroupList();
+		}
+	});
+}
+
+function createGroupList() 
+{
+	var thead = "<table width='100%' border='1px'><thead>";
+	thead += "<tr>"; 
+	thead += "<th scope='col'>No.</th>";
+	thead += "<th scope='col'>Server</th>";
+	thead += "<th scope='col'>Name</th>";
+	thead += "<th scope='col'>설명</th>";
+	thead += "</tr>";
+	thead += "</thead>";
+
+	var i = 0; 
+	
+	for(var k in mGroups){
+		
+		var group = mGroups[k];
+		var serverName = group.server;
+		//console.log("1:    " + serverName);
+		thead += "<tr><td width='10%'>";
+		thead += "<input type='checkbox' name='groupName' id='groupName_" + k + "' value="+ k + "/>";
+		thead += "</td><td>";
+		
+		for( var m in mClients) {
+			//console.log("-->" + m);
+			if( serverName == m ) {
+				thead += "" + mClients[m].fqn;
+			}
+		}
+		
+		thead += "</td><td>"
+		thead += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
+		thead += "</td><td>";
+		thead += mGroups[k]["desc"];
+		thead += "</td>"
+		thead += "</tr>";
+		
+		i++;
+	}
+	
+	thead += "</table>"
+	
+	$("#group_list").empty();
+	$("#group_list").append(thead);
+	
+	createServerList();
+}
+
+function checkServerList(key)
+{
+	var result = false;
+	
+	for(var group in mGroups) {
+		
+		var serverKey = mGroups[group].server;
+		
+		if(serverKey == key)
+			result = true;
+		
+	}
+	
+	return result;
+}
+
+function createServerView()
+{
+	var elem = "";
+	
+	var isExisted = false;
+	for(var key in mClients)
+	{
+		var result = checkServerList(key);
+		
+		if(!result && mClients[key].mode == "server") {
+			elem += "<input type='radio' name='serverName' id='serverName' value='" + mClients[key].url +"'/>";
+			elem += mClients[key].fqn;
+			elem += "<br/>";
+		}
+		
+	}
+
+	$("#server_list").empty();
+	$("#server_list").append(elem);
+}
+
+function checkClientsList(key)
+{
+	var result = false;
+	
+	for(var group in mGroups) {
+		
+		var clientList = mGroups[group].client;
+		
+		for(var i = 0; i < clientList.length; i++) {
+			console.log(clientList[i] + "===" + key);
+			if(clientList[i] == key)
+				return true;
+		}
+	}
+	
+	return result;
+}
+
+function createClientView()
+{
+	var client = "";
+	
+	for(var key in mClients)
+	{
+		var result = checkClientsList( key );
+		//console.log(key + " - result: " + result);
+		if(!result && mClients[key].mode == "client") {
+			client += "<input type='checkbox' name='clientName' id='clientName_" + mClients[key].url + "' value="+ mClients[key].url + "/>";
+			client += mClients[key].fqn;
+			client += "<br/>";
+		}
+	}
+
+	$("#client_list").empty();
+	$("#client_list").append(client);
+}
+
+function createServerList()
+{
+	createServerView();
+	createClientView();
+	$("#monitor_client_view").empty();
+	$("#group_name").val("");
+	$("#group_desc").val("");
+}
+
+
+
+
 
 function replaceAll(str, orgStr, repStr) {
 
@@ -160,228 +339,6 @@ function selectedGroup() {
 
 	return list;
 }
-
-/*
-function requestServerList() {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_server_list",
-		dataType: "json",
-		data: {
-			
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			mClients = data;
-			createServerList( mClients );
-		}
-	});
-}
-*/
-
-function requestGroupList() {
-	
-	 $.ajax({
-		cache: false,
-		type: "GET",
-		url: "/request_admin_group_list",
-		dataType: "json",
-		data: {
-			
-		},
-		error: function () {
-
-		},
-		success: function ( data ) {
-			console.log( data );
-			mClients = data.clients;
-			mGroups = data.groups;
-			createGroupList();
-		}
-	});
-}
-
-function createGroupList() 
-{
-	var thead = "<table width='100%' border='1px'><thead>";
-	thead += "<tr>"; 
-	thead += "<th scope='col'>No.</th>";
-	thead += "<th scope='col'>Server</th>";
-	thead += "<th scope='col'>Name</th>";
-	thead += "<th scope='col'>설명</th>";
-	thead += "</tr>";
-	thead += "</thead>";
-
-	var i = 0; 
-	
-	for(var k in mGroups){
-		
-		var group = mGroups[k];
-		var serverName = group.server;
-		console.log("1:    " + serverName);
-		thead += "<tr><td width='10%'>";
-		thead += "<input type='checkbox' name='groupName' id='groupName_" + k + "' value="+ k + "/>";
-		thead += "</td><td>";
-		
-		for( var m in mClients) {
-			console.log("-->" + m);
-			if( serverName == m ) {
-				thead += "" + mClients[m].fqn;
-			}
-		}
-		
-		thead += "</td><td>"
-		thead += "<a href='#' onclick=onClickProfile('"+ k +"');>" + k + "</a>";
-		thead += "</td><td>";
-		thead += mGroups[k]["desc"];
-		thead += "</td>"
-		thead += "</tr>";
-		
-		i++;
-	}
-	
-	thead += "</table>"
-	
-	$("#group_list").empty();
-	$("#group_list").append(thead);
-	
-	createServerList();
-}
-
-function onClickProfile( name )
-{
-	var server = mGroups[name].server;
-	var clients = mGroups[name].client;
-	
-	var elemServer = '';
-	var elemClient = '';
-	/*
-	for( var i = 0; i < servers.length; i++ ) {
-		
-		var key = servers[i];
-		
-	for( var k in mClients) {
-
-		if( server == k )
-			elemServer += "<tr><td td width='100%'>" + mClients[k].fqn + '</td></tr>';
-	}
-	}
-	*/
-	for( var j = 0; j < clients.length; j++ ) {
-		
-		var key = clients[j];
-		
-		for( var k in mClients) {
-
-			if( key == k )
-				elemClient += "<tr><td width='100%'>" + mClients[k].fqn + '</td></tr>';
-		}
-	}
-	
-	$('#monitor_client_view').empty();
-	$('#monitor_client_view').append(elemClient);
-}
-
-function onClickCheck( form ) 
-{
-	var v = form.value;
-	console.log( v );
-}
-
-function checkServerList(key)
-{
-	var result = false;
-	
-	for(var group in mGroups) {
-		
-		var serverKey = mGroups[group].server;
-		
-		if(serverKey == key)
-			result = true;
-		
-	}
-	
-	return result;
-}
-
-function createServerView()
-{
-	var elem = "";
-	
-	var isExisted = false;
-	for(var key in mClients)
-	{
-		var result = checkServerList(key);
-		
-		if(!result && mClients[key].mode == "server") {
-			elem += "<input type='radio' name='serverName' id='serverName' value='" + key +"'/>";
-			elem += mClients[key].fqn;
-			elem += "<br/>";
-		}
-		
-	}
-
-	$("#server_list").empty();
-	$("#server_list").append(elem);
-}
-
-function checkClientsList(key)
-{
-	var result = false;
-	
-	for(var group in mGroups) {
-		
-		var clientList = mGroups[group].client;
-		
-		for(var i = 0; i < clientList.length; i++) {
-			
-			if(clientList[i] == key)
-				result = true;
-		}
-	}
-	
-	return result;
-}
-
-function createClientView()
-{
-	var client = "";
-	console.log(mClients);
-	console.log(mGroups);
-	
-	for(var key in mClients)
-	{
-		var result = checkClientsList( key );
-		console.log("result: " + result);
-		if(!result && mClients[key].mode == "client") {
-			client += "<input type='checkbox' name='clientName' id='clientName_" + key + "' value="+ key + "/>";
-			client += mClients[key].fqn;
-			client += "<br/>";
-		}
-	}
-
-	$("#client_list").empty();
-	$("#client_list").append(client);
-}
-
-function createServerList()
-{
-	createServerView();
-	createClientView();
-	$("#monitor_client_view").empty();
-	$("#group_name").val("");
-	$("#group_desc").val("");
-}
-
-
-
-
-
-
 
 
 

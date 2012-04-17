@@ -66,7 +66,7 @@ function AdminManager() {
 	if(storage.isMakeStorage()) {
 		storage.makeStorage();
 		
-        this.clone();
+        //this.clone();
 	}
 	
 	this.setProfiles();

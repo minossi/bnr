@@ -39,6 +39,7 @@ var Monkey		= require('../stuff/monkey.node');
 var fu 			= require('../fu.node');
 var url			= require('url');
 var qs			= require('querystring');
+var cio         = require('socket.io-client');
 
 var TAG			= 'admin_handler'
 
@@ -109,23 +110,38 @@ fu.setHandler("/request_admin_group_list",function(req, res) {
 
 fu.setHandler("/request_admin_build",function(req, res) {
 	
-	
 	de.log('[request_admin_build]');
 	var params = qs.parse(url.parse(req.url).query);
 		
 	var gname = params.group;
 	var list = g_manager.getGroupProfiles();
-	var uids = list[gname].client;
+	var server_url = list[gname].server;
 	
-	var socket = fu.sockets[uids[0]];
+	//console.log(params);
 	
+	if( server_url ) {
+		var io = cio.connect( server_url );
+		
+		io.emit('checkin', {mode:'client', port:0, fqn:'RnB Server', server_url:''}, function( result ) {
+
+			console.log("id is " + result);	
+			
+			io.emit('build real', params, function (result) {		
+				if(result)
+					res.simpleJSON( 200, result );
+				else
+					res.simpleJSON( 400, { error: "!request_admin_build" } );	
+			
+			});
+		
+		});
+	} else {
 	
-	/*	
-	var socket=null;
-	for(var k in fu.sockets){
-		socket = fu.sockets[k];
+		res.simpleJSON( 400, { error: "!not available agent!" } );
 	}
-	*/
+	
+	
+	/*I
 	if(socket) {
 		//var socket = fu.sockets[id];
 		socket.emit('build test', params, function (result) {		
@@ -138,6 +154,7 @@ fu.setHandler("/request_admin_build",function(req, res) {
 	}else{
 		res.simpleJSON( 400, { error: "!not available agent!" } );	
 	}
+	*/
 		
 });
 

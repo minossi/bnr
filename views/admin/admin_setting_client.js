@@ -53,7 +53,7 @@ var profile_meta = {
 
 $(document).ready(function () {
 	requestProfileList();
-	//requestDeviceList();
+
 });
 
 function requestProfileList() {
@@ -334,7 +334,7 @@ function createProfileList(data) {
 		
 		if (mProfilesData[k]["activity"]){
 
-			pf += "<button type='button' style='width:50px' onclick=onClickReal('" + dm + "') >Real Build</button>";
+			pf += "<button type='button' style='width:50px' onclick=onClickReal('" + i + "," + dm + "') >Real Build</button>";
 
 		}
 		
@@ -356,18 +356,12 @@ function onClickTest( index, domain ) {
 	var branch = "";
 	var group =  $("#actus_" + index).text();
 	
-	console.log( "=>" + group );
 	
-	if(domain == "gmkt") {
-		
-		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
-		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
-		branch = "bc_3000_001";
-	} else {
-		repo = "ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st";
-		repo_bn = "ssh://bku@192.168.72.51:29419/auct/rt/ItemPage3 iac/st"
-		branch = "bc_3001_001"
-	}
+	
+	repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
+	repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
+	branch = "bc_3000_001";
+	
 	
 	
 	$.ajax({
@@ -390,7 +384,7 @@ function onClickTest( index, domain ) {
 	});
 }
 
-function onClickReal( repo, branch ) {
+function onClickReal( index, domain ) {
 	var isReal = true;
 	
 	var repo = "";
@@ -398,18 +392,9 @@ function onClickReal( repo, branch ) {
 	var branch = "";
 	var group =  $("#actus_" + index).text();
 	
-	console.log( "=>" + group );
-	
-	if(domain == "gmkt") {
-		
-		repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
-		repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/st"
-		branch = "bc_3000_001";
-	} else {
-		repo = "ssh://bku@192.168.72.51:29419/auct/st/ItemPage3 iac/st";
-		repo_bn = "ssh://bku@192.168.72.51:29419/auct/rt/ItemPage3 iac/st"
-		branch = "bc_3001_001"
-	}
+	repo = "ssh://bku@192.168.72.51:29419/gmkt/st/Admin gmkt/st";
+	repo_bn = "ssh://bku@192.168.72.51:29419/gmkt/rt/Admin gmkt/rt"
+	branch = "bc_3000_001";
 	
 	
 	$.ajax({
@@ -610,68 +595,6 @@ function onClickDeleteProfile() {
 	requestDeleteProfile( list );
 }
 
-function onClickRun( isSave ) {
-	
-	var list = checkedProfileList();
-
-	if (list==0){
-	  alert("Select profile");
-
-	}else{
-		var profiles = new Object();
-
-		//remove unchecked profiles
-		for( profile in mProfilesData ) {
-			for(var i = 0; i < list.length; i++) {
-				if(list[i] == profile) {
-					var data = mProfilesData[profile];
-					profiles[profile] = data;
-				}
-			}
-		}
-		
-		//remove unchecked devices
-		for( profile in profiles ) {
-			var target = profiles[profile].target;
-			for( device in target ) {
-
-				if( !target[device].isActivity )
-					delete profiles[profile].target[device];
-			}
-		}
-
-		var result = confirm("Save modified data?");
-		//console.log("+++++++++++++++++++++++++++++++");
-		
-		if (result == true){
-			requestRun(profiles, true);
-			//console.log("====", r, profiles);
-		}
-		else{
-			requestRun(profiles, false);
-			//console.log("====", r, profiles);
-		 }
-	}	
-}
-
-function selectAllProfile(checked) {
-
-	for (i = 0; i < $("input[name=profileName]:checkbox").length;i++)
-	{
-		var ischecked = $("#profileName"+i).attr('checked',checked);
-	}
-}
-
-function selectAllApk(checked) {
-
-	var ischecked = $("input[name=apkName]:checkbox").attr('checked',checked);
-}
-
-function selectAllDevice(checked) {
-	
-	var ischecked = $("input[name=deviceName]:checkbox").attr('checked',checked);
-}
-
 function checkedProfileList() {
 
 	 var list = new Array();
@@ -692,53 +615,6 @@ function checkedDeviceList() {
 	return list;
 }
 
-/* Input Form Check*/
-function frmchk_char(str, condition)
-/*
-conditions  : 
- 0 = first character is alpahbet, and alphabet, number, '_' are available.
- 1 = Alphabet is available.
- 2 = Number is available.
- 3 = Korean is available.
- 4 = Alphabet, Number is available.
- 5 = Alphabet, Number, Korean is available.
- 6 = Number, Korean is available.
- 7 = Alphabet, Korean is available.
- 8 = Check included Korean.
-*/
-{
-	 var objPattern
-	 switch(condition){
-	  case(0) :
-	   objPattern = /^[a-zA-Z]{1}[a-zA-Z0-9_]+$/;
-	   break;
-	  case(1) :
-	   objPattern = /^[a-zA-Z]+$/;
-	   break;
-	  case(2) :
-	   objPattern = /^[0-9]+$/;
-	   break;
-	  case(3) :
-	   objPattern = /^[가-힣]+$/;
-	   break;
-	  case(4) :
-	   objPattern = /^[a-zA-Z0-9]+$/;
-	   break;
-	  case(5) :
-	   objPattern = /^[가-힣a-zA-Z0-9]+$/;
-	   break;
-	  case(6) :
-	   objPattern = /^[가-힣0-9]+$/;
-	   break;
-	  case(7) :
-	   objPattern = /^[가-힣a-zA-Z]+$/;
-	   break;
-	  case(8) :
-	   objPattern = /[가-힣]/;
-	 }
- return objPattern.test(str);
-}
-
 function replaceAll(str, orgStr, repStr) {
 
 	var result = str.split(orgStr).join(repStr);
@@ -746,62 +622,6 @@ function replaceAll(str, orgStr, repStr) {
 	return result;
 
 }
-
-// function checkedPackageList(deviceName) {
-// 	 
-// 	 packages.device = device_name;
-// 	 $("input[name='apkName']:checkbox:checked").each(function(){
-// 														packages.apk.push($(this).val().replace("/",""));
-// 													 });
-// 	 console.log('+++++++++++++++++++++');
-// 	 console.log(packages);
-// 	
-// 	 selected_packages.push(packages);
-// 	
-// 	 packages = {
-// 				device:"",
-// 				apk:[]
-// 				};
-// }
-
-// function checkedPackages() {
-// 
-// 	console.log("==============");
-// 	console.log(selected_packages);
-// 	console.log("==============");
-// 
-// 	for (j = 0; j < selected_packages.length; j++) {
-// 	   if (selected_packages[j].device=="" || selected_packages[j].device == device_name) {
-// 		   selected_packages.splice(j,1);
-// 	   }
-// 	}
-// 	packages.device = device_name;
-// 	 $("input[name='apkName']:checkbox:checked").each(function(){
-// 														packages.apk.push($(this).val().replace("/",""));
-// 													 });
-// 	 selected_packages.push(packages);
-// 	 
-// 	 var selected_package_list = [];
-// 	 
-// 	 for (i =0; i < selected_packages.length ; i++) {
-// 		var app_list =	{
-// 						profile: null,
-// 					   device : "",
-// 					   app:[]
-// 					 };
-// 		app_list.device = selected_packages[i].device;
-// 		for(j=0; j < selected_packages[i].apk.length ; j++) {
-// 		 var apps	=  {
-// 						name:""
-// 						};
-// 		  apps.name = selected_packages[i].apk[j];
-// 		  app_list.app.push(apps);
-// 		}
-// 
-// 		 selected_package_list.push(app_list);
-// 	 }
-// 	 return selected_package_list;
-// }
 
 // Popup window code
  function newPopup(url) {
